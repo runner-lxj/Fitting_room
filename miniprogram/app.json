@@ -1,0 +1,52 @@
+﻿{
+  "pages": [
+    "pages/index/index",
+    "pages/wardrobe/wardrobe",
+    "pages/my-outfits/my-outfits",
+    "pages/profile/profile",
+    "pages/clothes-add/clothes-add",
+    "pages/outfit-detail/outfit-detail",
+    "pages/admin/admin"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FF7E8D",
+    "navigationBarTitleText": "穿搭助手",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#FFF5F5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF7E8D",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/icons/home.png",
+        "selectedIconPath": "static/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/wardrobe/wardrobe",
+        "text": "衣柜",
+        "iconPath": "static/icons/wardrobe.png",
+        "selectedIconPath": "static/icons/wardrobe-active.png"
+      },
+      {
+        "pagePath": "pages/my-outfits/my-outfits",
+        "text": "穿搭",
+        "iconPath": "static/icons/outfit.png",
+        "selectedIconPath": "static/icons/outfit-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "static/icons/profile.png",
+        "selectedIconPath": "static/icons/profile-active.png"
+      }
+    ]
+  },
+  "cloud": true,
+  "sitemapLocation": "sitemap.json"
+}

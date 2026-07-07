@@ -1,0 +1,48 @@
+﻿<view class="page {{themeClass}}">
+  <view class="gradient-header short">
+    <text class="page-title">管理员配置</text>
+  </view>
+
+  <view class="config-section card">
+    <text class="section-label">MiMo 模型配置</text>
+    
+    <view class="form-row">
+      <text class="form-label">模型</text>
+      <picker mode="selector" range="{{modelOptions}}" value="{{modelIdx}}" bindchange="onModelChange">
+        <text class="form-value">{{config.model}} ▾</text>
+      </picker>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">Temperature</text>
+      <slider class="slider" min="0" max="15" value="{{config.temperature * 10}}" 
+              show-value bindchange="onTempChange" activeColor="{{primaryColor}}"/>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">Top P</text>
+      <slider class="slider" min="1" max="100" value="{{config.top_p * 100}}"
+              show-value bindchange="onTopPChange" activeColor="{{primaryColor}}"/>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">推荐套数</text>
+      <picker mode="selector" range="{{[1,2,3,4,5]}}" value="{{config.outfit_count - 1}}" bindchange="onCountChange">
+        <text class="form-value">{{config.outfit_count}} 套 ▾</text>
+      </picker>
+    </view>
+  </view>
+
+  <view class="config-section card">
+    <text class="section-label">系统提示词</text>
+    <textarea class="prompt-input" value="{{config.system_prompt}}" 
+              bindinput="onPromptInput" placeholder="输入搭配推荐的系统提示词..."
+              auto-height maxlength="-1"></textarea>
+  </view>
+
+  <view class="btn-wrap">
+    <button class="btn-primary" bindtap="saveConfig" disabled="{{saving}}">
+      {{saving ? '保存中...' : '保存配置'}}
+    </button>
+  </view>
+</view>

@@ -1,0 +1,89 @@
+﻿<!-- pages/index/index.wxml - 首页 -->
+<view class="page {{themeClass}}">
+  <!-- 渐变头部 -->
+  <view class="gradient-header">
+    <view class="header-content">
+      <view class="greeting">
+        <text class="greeting-text">{{greeting}}，{{userName}}</text>
+        <text class="greeting-sub">今天穿什么？让我来帮你搭配</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 天气卡片 -->
+  <view class="weather-section" style="margin-top: -20rpx;">
+    <view class="card weather-card">
+      <view class="weather-main">
+        <view class="weather-temp">
+          <text class="temp-num">{{weather.temp}}</text>
+          <text class="temp-unit">°C</text>
+        </view>
+        <view class="weather-info">
+          <text class="weather-desc">{{weather.condition}}</text>
+          <text class="weather-detail">{{weather.wind}} · 湿度 {{weather.humidity}}%</text>
+        </view>
+        <image class="weather-icon" src="{{weather.icon}}" mode="aspectFit"></image>
+      </view>
+      <view class="weather-tip">
+        <text class="tip-icon">💡</text>
+        <text class="tip-text">{{weather.tip}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日推荐 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">今日推荐</text>
+      <text class="section-more" bindtap="refreshOutfits">换一批</text>
+    </view>
+
+    <!-- 加载中 -->
+    <view class="loading-dots" wx:if="{{loading}}">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+
+    <!-- 推荐列表 -->
+    <scroll-view scroll-x class="outfit-scroll" wx:if="{{!loading && outfits.length > 0}}">
+      <view class="outfit-item card" wx:for="{{outfits}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+        <image class="outfit-img" src="{{item.composition_url}}" mode="aspectFill"></image>
+        <view class="outfit-info">
+          <text class="outfit-name">{{item.name}}</text>
+          <text class="outfit-occasion">{{item.occasion}}</text>
+        </view>
+        <view class="outfit-score">
+          <text class="score-num">{{item.scoreText}}</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && outfits.length === 0}}">
+      <text class="empty-icon">👗</text>
+      <text class="empty-text">衣柜空空如也</text>
+      <text class="empty-sub">先添加几件衣服，我来帮你搭配</text>
+      <button class="btn-primary empty-btn" bindtap="goWardrobe">去衣柜</button>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-actions">
+    <view class="action-item" bindtap="goWardrobe">
+      <view class="action-icon" style="background: var(--gradient-warm);">👗</view>
+      <text class="action-text">我的衣柜</text>
+      <text class="action-count">{{clothesCount}} 件</text>
+    </view>
+    <view class="action-item" bindtap="goAddClothes">
+      <view class="action-icon" style="background: var(--gradient-cool);">📸</view>
+      <text class="action-text">添加衣服</text>
+      <text class="action-sub">拍照入库</text>
+    </view>
+    <view class="action-item" bindtap="goMyOutfits">
+      <view class="action-icon" style="background: var(--gradient-main);">✨</view>
+      <text class="action-text">我的穿搭</text>
+      <text class="action-count">{{outfitCount}} 套</text>
+    </view>
+  </view>
+</view>

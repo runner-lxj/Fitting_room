@@ -1,0 +1,42 @@
+﻿<view class="page {{themeClass}}">
+  <view class="detail-hero">
+    <image class="hero-img" src="{{outfit.composition_url}}" mode="aspectFit" bindtap="previewImage"></image>
+  </view>
+  
+  <view class="detail-body">
+    <view class="card">
+      <view class="detail-header">
+        <text class="detail-name">{{outfit.name}}</text>
+        <view class="detail-meta">
+          <text class="tag">{{outfit.weather_context}}</text>
+          <text class="tag">{{outfit.occasion}}</text>
+        </view>
+      </view>
+      <view class="divider"></view>
+      <text class="detail-desc">{{outfit.description}}</text>
+    </view>
+
+    <!-- 搭配单品 -->
+    <view class="card items-card">
+      <text class="card-title">搭配单品</text>
+      <view class="items-list">
+        <view class="item-row" wx:for="{{displayItems}}" wx:key="id">
+          <image class="item-img" src="{{item.image}}" mode="aspectFit"></image>
+          <view class="item-info">
+            <text class="item-name">{{item.name}}</text>
+            <text class="item-cat">{{item.categoryLabel}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-bar safe-bottom" wx:if="{{outfit.status === 'pending'}}">
+      <button class="btn-secondary action-btn" bindtap="rejectOutfit">舍弃</button>
+      <button class="btn-primary action-btn" bindtap="acceptOutfit">✨ 采纳搭配</button>
+    </view>
+    <view class="action-bar safe-bottom" wx:else>
+      <text class="accepted-text">✅ 已采纳</text>
+    </view>
+  </view>
+</view>

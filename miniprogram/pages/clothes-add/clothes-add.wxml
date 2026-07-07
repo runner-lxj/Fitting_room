@@ -1,0 +1,86 @@
+﻿<view class="page {{themeClass}}">
+  <view class="gradient-header short">
+    <text class="page-title">添加衣服</text>
+    <text class="page-sub" wx:if="{{uploadList.length > 0}}">{{uploadList.length}}/9 张</text>
+  </view>
+
+  <!-- 已上传图片列表 -->
+  <view class="upload-list" wx:if="{{uploadList.length > 0}}">
+    <view class="upload-item card" wx:for="{{uploadList}}" wx:key="tempPath" 
+          bindtap="editItem" data-index="{{index}}">
+      <image class="item-thumb" src="{{item.tempPath}}" mode="aspectFill"></image>
+      
+      <!-- 状态角标 -->
+      <view class="status-badge badge-{{item.status}}">
+        <text wx:if="{{item.status === 'uploading'}}">上传中</text>
+        <text wx:elif="{{item.status === 'pending'}}">排队中</text>
+        <text wx:elif="{{item.status === 'recognizing'}}">识别中</text>
+        <text wx:elif="{{item.status === 'recognized'}}">✓ {{item.name}}</text>
+        <text wx:elif="{{item.status === 'failed'}}">识别失败</text>
+      </view>
+
+      <!-- 识别中动画 -->
+      <view class="recognizing-overlay" wx:if="{{item.status === 'recognizing'}}">
+        <view class="spinner"></view>
+      </view>
+
+      <!-- 删除按钮 -->
+      <view class="remove-btn" catchtap="removeItem" data-index="{{index}}">✕</view>
+    </view>
+  </view>
+
+  <!-- 上传按钮（还可以继续添加） -->
+  <view class="upload-section" wx:if="{{uploadList.length < 9}}">
+    <view class="upload-area" bindtap="chooseImage">
+      <text class="upload-icon">📷</text>
+      <text class="upload-text">继续添加</text>
+      <text class="upload-hint">还可以添加 {{9 - uploadList.length}} 张</text>
+    </view>
+  </view>
+
+  <!-- 编辑弹窗 -->
+  <view class="edit-mask" wx:if="{{editIndex >= 0}}" bindtap="editIndex = -1">
+    <view class="edit-panel" catchtap="">
+      <view class="edit-header">
+        <text class="edit-title">编辑识别结果</text>
+        <text class="edit-close" bindtap="editIndex = -1">✕</text>
+      </view>
+      
+      <view class="edit-form">
+        <view class="form-row">
+          <text class="form-label">分类</text>
+          <picker mode="selector" range="{{categoryOptions}}" value="{{categoryIdx}}" bindchange="onCategoryChange">
+            <text class="form-value">{{categoryOptions[categoryIdx]}} ▾</text>
+          </picker>
+        </view>
+        <view class="form-row">
+          <text class="form-label">子分类</text>
+          <picker mode="selector" range="{{subcategoryOptions}}" value="{{subcategoryIdx}}" bindchange="onSubcategoryChange">
+            <text class="form-value">{{subcategoryOptions[subcategoryIdx]}} ▾</text>
+          </picker>
+        </view>
+        <view class="form-row">
+          <text class="form-label">颜色</text>
+          <text class="form-value">{{result.color}}</text>
+        </view>
+        <view class="form-row">
+          <text class="form-label">材质</text>
+          <text class="form-value">{{result.material}}</text>
+        </view>
+        <view class="form-row">
+          <text class="form-label">风格</text>
+          <view class="tags-row">
+            <text class="tag" wx:for="{{result.style_tags}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <button class="btn-primary" bindtap="saveEdit">保存修改</button>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="bottom-bar safe-bottom" wx:if="{{uploadList.length > 0}}">
+    <button class="btn-primary" bindtap="goBack">完成</button>
+  </view>
+</view>

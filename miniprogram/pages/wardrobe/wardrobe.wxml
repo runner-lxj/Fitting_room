@@ -1,0 +1,54 @@
+﻿<!-- pages/wardrobe/wardrobe.wxml -->
+<view class="page {{themeClass}}">
+  <view class="gradient-header">
+    <view class="header-content">
+      <text class="page-title">我的衣柜</text>
+      <text class="page-sub">共 {{totalCount}} 件衣服</text>
+    </view>
+  </view>
+
+  <!-- 分类 Tab -->
+  <scroll-view scroll-x class="tab-scroll" style="margin-top: -20rpx; position: relative; z-index: 3;">
+    <view class="tab-list">
+      <view class="tab-item {{currentTab === item.key ? 'active' : ''}}" 
+            wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
+        <text>{{item.name}}</text>
+        <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 二级分类筛选 -->
+  <scroll-view scroll-x class="sub-tab-scroll" wx:if="{{subTabs.length > 0}}">
+    <view class="sub-tab-list">
+      <view class="sub-tab-item {{currentSub === item ? 'active' : ''}}"
+            wx:for="{{subTabs}}" wx:key="*this" bindtap="switchSub" data-sub="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 衣服网格 -->
+  <view class="clothes-grid" wx:if="{{filteredClothes.length > 0}}">
+    <view class="clothes-item" wx:for="{{filteredClothes}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+      <image class="clothes-img" src="{{item.cutout_url || item.original_url}}" mode="aspectFit"></image>
+      <view class="clothes-tags">
+        <text class="tag">{{item.subcategory}}</text>
+        <text class="tag color-tag" style="background: {{item.colorHex || '#f0f0f0'}};">{{item.color}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && filteredClothes.length === 0}}">
+    <text class="empty-icon">👔</text>
+    <text class="empty-text">还没有衣服</text>
+    <text class="empty-sub">拍照添加你的第一件衣服吧</text>
+    <button class="btn-primary empty-btn" bindtap="goAdd">添加衣服</button>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab-btn" bindtap="goAdd">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

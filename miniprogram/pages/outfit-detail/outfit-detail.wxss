@@ -1,0 +1,21 @@
+﻿.page { background: var(--bg-page); min-height: 100vh; }
+.detail-hero { width: 100%; height: 560rpx; background: var(--bg-card); display: flex; align-items: center; justify-content: center; }
+.hero-img { width: 90%; height: 520rpx; }
+.detail-body { padding: 0 32rpx; margin-top: -20rpx; position: relative; z-index: 2; }
+.detail-header { margin-bottom: 16rpx; }
+.detail-name { font-size: 38rpx; font-weight: 600; display: block; margin-bottom: 16rpx; }
+.detail-meta { display: flex; gap: 12rpx; }
+.detail-desc { font-size: 28rpx; color: var(--text-secondary); line-height: 1.8; }
+
+.items-card { margin-top: 24rpx; }
+.card-title { font-size: 30rpx; font-weight: 600; display: block; margin-bottom: 20rpx; }
+.items-list { display: flex; flex-direction: column; gap: 20rpx; }
+.item-row { display: flex; align-items: center; gap: 20rpx; }
+.item-img { width: 100rpx; height: 100rpx; border-radius: var(--radius-md); background: #f8f8f8; flex-shrink: 0; }
+.item-info { flex: 1; }
+.item-name { font-size: 28rpx; font-weight: 500; display: block; }
+.item-cat { font-size: 24rpx; color: var(--text-secondary); display: block; margin-top: 4rpx; }
+
+.action-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 24rpx; padding: 24rpx 32rpx; background: var(--bg-card); box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.05); }
+.action-btn { flex: 1; margin: 0 !important; }
+.accepted-text { width: 100%; text-align: center; font-size: 30rpx; color: var(--primary); padding: 20rpx; }

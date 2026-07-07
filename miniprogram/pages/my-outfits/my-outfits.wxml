@@ -1,0 +1,23 @@
+﻿<view class="page {{themeClass}}">
+  <view class="gradient-header">
+    <text class="page-title">我的穿搭</text>
+    <text class="page-sub">共 {{records.length}} 套搭配</text>
+  </view>
+
+  <view class="outfit-list" wx:if="{{records.length > 0}}">
+    <view class="outfit-record card" wx:for="{{records}}" wx:key="_id" bindtap="goDetail" data-id="{{item.outfit_id}}">
+      <image class="record-img" src="{{item.wardrobe_url}}" mode="aspectFill"></image>
+      <view class="record-info">
+        <text class="record-name">{{item.name}}</text>
+        <text class="record-date">{{item.date}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{!loading && records.length === 0}}">
+    <text class="empty-icon">✨</text>
+    <text class="empty-text">还没有采纳过搭配</text>
+    <text class="empty-sub">去首页看看今天的推荐吧</text>
+    <button class="btn-primary empty-btn" bindtap="goHome">去看看</button>
+  </view>
+</view>

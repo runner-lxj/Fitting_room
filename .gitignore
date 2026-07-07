@@ -1,16 +1,21 @@
-﻿__pycache__/
-*.pyc
-*.pyo
-.env
-*.egg-info/
-dist/
-build/
-.venv/
-venv/
-node_modules/
+﻿# 素材（用户个人照片，不上传）
+素材/
+
+# 临时识别结果
+recognize_result.json
+recognize_result.txt
+recognize_clothes.py
+result_out.txt
+result_err.txt
+
+# 系统文件
 .DS_Store
 Thumbs.db
-validation/test_images/
-validation/results/
-validation/_*.py
-*.whl
+*.swp
+*.swo
+
+# Node modules
+node_modules/
+
+# 小程序本地配置
+miniprogram/project.private.config.json

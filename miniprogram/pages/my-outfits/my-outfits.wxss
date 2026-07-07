@@ -1,0 +1,11 @@
+﻿.page { min-height: 100vh; background: var(--bg-page); }
+.page-title { font-size: 40rpx; font-weight: 600; color: #FFF; display: block; }
+.page-sub { font-size: 26rpx; color: rgba(255,255,255,0.85); display: block; margin-top: 8rpx; }
+.outfit-list { padding: 24rpx 32rpx; }
+.outfit-record { display: flex; align-items: center; gap: 24rpx; padding: 20rpx !important; }
+.record-img { width: 120rpx; height: 160rpx; border-radius: var(--radius-md); background: #f8f8f8; flex-shrink: 0; }
+.record-info { flex: 1; }
+.record-name { font-size: 30rpx; font-weight: 500; display: block; }
+.record-date { font-size: 24rpx; color: var(--text-secondary); display: block; margin-top: 8rpx; }
+.empty-text { font-size: 32rpx; font-weight: 500; margin-bottom: 12rpx; }
+.empty-sub { font-size: 26rpx; margin-bottom: 32rpx; }

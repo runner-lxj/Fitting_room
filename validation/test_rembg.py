@@ -17,8 +17,8 @@ draw.rectangle([50, 50, 120, 120], fill=(200, 100, 50))
 draw.ellipse([650, 600, 780, 750], fill=(100, 180, 80))
 draw.line([(0, 700), (800, 680)], fill=(80, 80, 80), width=3)
 
-test_dir = Path(r"E:\AI space\fitting_room\validation\test_images")
-result_dir = Path(r"E:\AI space\fitting_room\validation\results")
+test_dir = Path(r"E:\AI_space\fitting_room\validation\test_images")
+result_dir = Path(r"E:\AI_space\fitting_room\validation\results")
 input_path = test_dir / "test_shirt.png"
 img.save(str(input_path))
 print(f"  -> 测试图片已保存: {input_path}")

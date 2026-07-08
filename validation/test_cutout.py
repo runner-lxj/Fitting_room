@@ -45,8 +45,8 @@ draw.rectangle([30, 30, 90, 80], fill=(120, 80, 50))  # 木块
 draw.ellipse([650, 650, 780, 780], fill=(80, 120, 80))  # 植物
 draw.line([(0, 750), (800, 740)], fill=(100, 100, 100), width=2)
 
-test_dir = Path(r"E:\AI space\fitting_room\validation\test_images")
-result_dir = Path(r"E:\AI space\fitting_room\validation\results")
+test_dir = Path(r"E:\AI_space\fitting_room\validation\test_images")
+result_dir = Path(r"E:\AI_space\fitting_room\validation\results")
 input_path = test_dir / "test_hoodie.png"
 img.save(str(input_path))
 print(f"  -> 测试图片已保存: {input_path}")

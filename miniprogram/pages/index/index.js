@@ -61,44 +61,14 @@ Page({
       this.setData({ locationId: saved.id, locationName: saved.name })
       this.loadData()
     } else {
-      wx.authorize({
-        scope: 'scope.userLocation',
-        success: () => { this.getLocation() },
-        fail: () => {
-          this.setData({ locationId: '101010100', locationName: '北京' })
-          this.loadData()
-        }
-      })
+      this.getLocation()
     }
   },
 
   refreshLocation() {
     wx.removeStorageSync('userLocation')
     this.setData({ locationId: '101010100', locationName: '定位中...' })
-    wx.authorize({
-      scope: 'scope.userLocation',
-      success: () => { this.getLocation() },
-      fail: () => {
-        wx.showModal({
-          title: '位置授权',
-          content: '需要位置权限来获取当地天气，是否前往设置开启？',
-          confirmText: '去设置',
-          cancelText: '暂不',
-          success: (res) => {
-            if (res.confirm) {
-              wx.openSetting({
-                success: (r) => {
-                  if (r.authSetting['scope.userLocation']) this.getLocation()
-                  else this.setData({ locationName: '北京' })
-                }
-              })
-            } else {
-              this.setData({ locationName: '北京' })
-            }
-          }
-        })
-      }
-    })
+    this.getLocation()
   },
 
   getLocation() {
@@ -106,27 +76,32 @@ Page({
       type: 'gcj02',
       success: (res) => { this.reverseGeocode(res.latitude, res.longitude) },
       fail: () => {
-        this.setData({ locationId: '101010100', locationName: '北京' })
-        this.loadData()
+        // 定位失败或用户拒绝，引导去设置开启
+        wx.showModal({
+          title: '位置权限',
+          content: '需要位置权限来获取当地天气，是否前往设置开启？',
+          confirmText: '去设置',
+          cancelText: '暂不',
+          success: (res) => {
+            if (res.confirm) {
+              wx.openSetting({
+                success: (r) => {
+                  if (r.authSetting['scope.userLocation']) {
+                    this.getLocation()
+                  } else {
+                    this.setData({ locationId: '101010100', locationName: '北京' })
+                    this.loadData()
+                  }
+                }
+              })
+            } else {
+              this.setData({ locationId: '101010100', locationName: '北京' })
+              this.loadData()
+            }
+          }
+        })
       }
     })
-  },
-
-  async reverseGeocode(lat, lng) {
-    try {
-      const result = await api.reverseGeocode(lat, lng)
-      if (result && result.id) {
-        const locData = { id: result.id, name: result.name }
-        wx.setStorageSync('userLocation', locData)
-        this.setData({ locationId: result.id, locationName: result.name })
-      } else {
-        this.setData({ locationId: '101010100', locationName: '北京' })
-      }
-    } catch (e) {
-      console.error('reverseGeocode failed:', e)
-      this.setData({ locationId: '101010100', locationName: '北京' })
-    }
-    this.loadData()
   },
 
   async loadData() {

@@ -4,10 +4,10 @@
       <view>
         <text class="home-greeting" style="font-family: ZCOOLKuaiLe">{{greeting}}{{userName ? "，" + userName : ""}}</text>
         <text class="home-greeting-sub">{{outfitSuggestion}}</text>
-        <view class="home-location" bindtap="onLocationTap">
+        <view class="home-location">
           <text class="loc-emoji">📍</text>
           <text>{{locationName}}</text>
-          <text class="location-switch-text" bindtap="onLocationTap">切换</text>
+        </view>
         </view>
       </view>
       <view class="digital-avatar">

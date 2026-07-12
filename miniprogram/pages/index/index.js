@@ -2,16 +2,6 @@ const app = getApp()
 const { getThemeClass } = require('../../utils/theme')
 const api = require('../../utils/api')
 
-const CITY_MAP = { '101010100': '北京', '101020100': '上海', '101280101': '广州', '101280601': '深圳', '101210101': '杭州', '101270101': '成都' }
-  '101010100': '北京', '101020100': '上海', '101280101': '广州',
-  '101280601': '深圳', '101270101': '成都', '101230201': '厦门',
-  '101210101': '杭州', '101190401': '南京', '101180101': '郑州',
-  '101030100': '天津', '101250101': '长沙', '101230101': '福州',
-  '101120101': '济南', '101110101': '西安', '101070101': '沈阳',
-  '101050101': '哈尔滨', '101200101': '武汉', '101290101': '昆明',
-  '101330101': '大连', '101240101': '南昌'
-}
-
 Page({
   data: {
     themeClass: '',
@@ -24,8 +14,7 @@ Page({
     clothesCount: 0,
     outfitCount: 0,
     locationName: '北京',
-    locationId: '101010100',
-    locationAuthorized: false
+    locationId: '101010100'
   },
 
   onLoad() {
@@ -69,30 +58,52 @@ Page({
   initLocation() {
     const saved = wx.getStorageSync('userLocation')
     if (saved) {
-      this.setData({ locationId: saved.id, locationName: saved.name, locationAuthorized: true })
+      this.setData({ locationId: saved.id, locationName: saved.name })
+      this.loadData()
     } else {
-      this.setData({ locationId: '101010100', locationName: '北京', locationAuthorized: false })
+      // 首次进入，请求定位授权
+      wx.authorize({
+        scope: 'scope.userLocation',
+        success: () => {
+          this.getLocation()
+        },
+        fail: () => {
+          // 未授权，使用默认北京
+          this.setData({ locationId: '101010100', locationName: '北京' })
+          this.loadData()
+        }
+      })
     }
-    this.loadData()
   },
 
-  onLocationTap() {
-    console.log('[index] onLocationTap called')
-    const cities = Object.entries(CITY_MAP)
-    const names = cities.map(([, name]) => name)
-    console.log('[index] cities count:', names.length)
-    wx.showActionSheet({
-      itemList: names,
+  getLocation() {
+    wx.getLocation({
+      type: 'gcj02',
       success: (res) => {
-        const [id, name] = cities[res.tapIndex]
-        wx.setStorageSync('userLocation', { id, name })
-        this.setData({ locationId: id, locationName: name, locationAuthorized: true })
-        this.loadData()
+        this.reverseGeocode(res.latitude, res.longitude)
       },
-      fail: (err) => {
-        console.warn('[index] showActionSheet fail:', err)
+      fail: () => {
+        this.setData({ locationId: '101010100', locationName: '北京' })
+        this.loadData()
       }
     })
+  },
+
+  async reverseGeocode(lat, lng) {
+    try {
+      const result = await api.reverseGeocode(lat, lng)
+      if (result && result.id) {
+        const locData = { id: result.id, name: result.name }
+        wx.setStorageSync('userLocation', locData)
+        this.setData({ locationId: result.id, locationName: result.name })
+      } else {
+        this.setData({ locationId: '101010100', locationName: '北京' })
+      }
+    } catch (e) {
+      console.error('reverseGeocode failed:', e)
+      this.setData({ locationId: '101010100', locationName: '北京' })
+    }
+    this.loadData()
   },
 
   async loadData() {

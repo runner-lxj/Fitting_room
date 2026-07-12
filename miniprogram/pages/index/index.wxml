@@ -2,12 +2,12 @@
   <view class="home-header animate-in">
     <view class="home-header-row">
       <view>
-        <text class="home-greeting">{{greeting}}{{userName ? "，" + userName : ""}}</text>
+        <text class="home-greeting" style="font-family: ZCOOLKuaiLe">{{greeting}}{{userName ? "，" + userName : ""}}</text>
         <text class="home-greeting-sub">{{outfitSuggestion}}</text>
         <view class="home-location" bindtap="onLocationTap">
           <text class="loc-emoji">📍</text>
           <text>{{locationName}}</text>
-          <text class="location-switch-text" bindtap="onChangeCity">切换</text>
+          <text class="location-switch-text" catchtap="onChangeCity">切换</text>
         </view>
       </view>
       <view class="digital-avatar">

@@ -71,24 +71,35 @@ Page({
       this.setData({ locationId: saved.id, locationName: saved.name, locationAuthorized: true })
       this.loadData()
     } else {
-      wx.authorize({ scope: 'scope.userLocation', success: () => {
-        this.setData({ locationAuthorized: true })
-        this.getLocation()
-      }, fail: () => {
-        this.setData({ locationId: '101010100', locationName: '北京', locationAuthorized: false })
-        this.loadData()
-      }})
+      this.setData({ locationId: '101010100', locationName: '北京', locationAuthorized: false })
+      this.loadData()
     }
   },
 
   getLocation() {
-    wx.getLocation({ type: 'gcj02', success: (res) => {
-      const { latitude, longitude } = res
-      this.reverseGeocode(latitude, longitude)
+    wx.authorize({ scope: 'scope.userLocation', success: () => {
+      wx.getLocation({ type: 'gcj02', success: (res) => {
+        this.reverseGeocode(res.latitude, res.longitude)
+      }, fail: () => {
+        console.warn('[index] getLocation fail, using default')
+      }})
     }, fail: () => {
-      this.setData({ locationId: '101010100', locationName: '北京' })
-      this.loadData()
+      console.warn('[index] location auth denied')
     }})
+  },
+
+  async reverseGeocode(lat, lng) {
+    try {
+      const result = await api.reverseGeocode(lat, lng)
+      if (result && result.id) {
+        const locData = { id: result.id, name: result.name }
+        wx.setStorageSync('userLocation', locData)
+        this.setData({ locationId: result.id, locationName: result.name })
+        this.loadData()
+      }
+    } catch (e) {
+      console.error('reverseGeocode failed:', e)
+    }
   },
 
   async reverseGeocode(lat, lng) {

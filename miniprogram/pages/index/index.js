@@ -34,6 +34,7 @@ Page({
       return
     }
     this.setData({ themeClass: getThemeClass() })
+    wx.cloud.getTempFileURL({ fileList: ['cloud://cloud1-d8gne3bjzb37229e4.636c-cloud1-d8gne3bjzb37229e4-1451824826/clothes/ZCOOLKuaiLe-Regular.ttf'] }).then(res => { if (res.fileList && res.fileList[0] && res.fileList[0].tempFileURL) { wx.loadFontFace({ family: 'ZCOOLKuaiLe', source: 'url(' + res.fileList[0].tempFileURL + ')', success: () => {}, fail: (e) => { console.log('[font] err:', e) } }) } }).catch(e => { console.log('[font] getTempFileURL err:', e) })
     this.setGreeting()
     this.initLocation()
   },
@@ -53,13 +54,13 @@ Page({
   setGreeting() {
     const h = new Date().getHours()
     let g = '', suggestion = ''
-    if (h < 6) { g = '夜深了'; suggestion = '早点休息，明天穿得美美的' }
-    else if (h < 9) { g = '早上好'; suggestion = '新的一天，从穿搭开始' }
-    else if (h < 12) { g = '上午好'; suggestion = '今天天气不错，穿得舒适最重要' }
-    else if (h < 14) { g = '中午好'; suggestion = '午间时光，想好下午穿什么了吗' }
-    else if (h < 18) { g = '下午好'; suggestion = '今天适合穿一件轻薄的外套出门' }
-    else if (h < 21) { g = '晚上好'; suggestion = '下班啦，今晚穿什么出门' }
-    else { g = '晚上好'; suggestion = '夜晚的穿搭，也可以很出彩' }
+    if (h < 6) { g = '夜深了'; suggestion = '早点休息，明天穿得美美的~' }
+    else if (h < 9) { g = '早上好'; suggestion = '新的一天，从穿搭开始~' }
+    else if (h < 12) { g = '上午好'; suggestion = '今天也是美美哒~' }
+    else if (h < 14) { g = '中午好'; suggestion = '午间时光，小憩一会~' }
+    else if (h < 18) { g = '下午好'; suggestion = '今天穿的格外地搭呢~' }
+    else if (h < 21) { g = '晚上好'; suggestion = '下班啦，今天也是被自己美晕的一天~' }
+    else { g = '晚上好'; suggestion = '夜晚的穿搭，也可以很出彩~' }
     const userInfo = wx.getStorageSync('userInfo')
     const userName = userInfo?.nickName || ''
     this.setData({ greeting: g, outfitSuggestion: suggestion, userName })
@@ -69,118 +70,44 @@ Page({
     const saved = wx.getStorageSync('userLocation')
     if (saved) {
       this.setData({ locationId: saved.id, locationName: saved.name, locationAuthorized: true })
-      this.loadData()
     } else {
       this.setData({ locationId: '101010100', locationName: '北京', locationAuthorized: false })
-      this.loadData()
-    }
-  },
-
-  getLocation() {
-    wx.authorize({ scope: 'scope.userLocation', success: () => {
-      wx.getLocation({ type: 'gcj02', success: (res) => {
-        this.reverseGeocode(res.latitude, res.longitude)
-      }, fail: () => {
-        console.warn('[index] getLocation fail, using default')
-      }})
-    }, fail: () => {
-      console.warn('[index] location auth denied')
-    }})
-  },
-
-  async reverseGeocode(lat, lng) {
-    try {
-      const result = await api.reverseGeocode(lat, lng)
-      if (result && result.id) {
-        const locData = { id: result.id, name: result.name }
-        wx.setStorageSync('userLocation', locData)
-        this.setData({ locationId: result.id, locationName: result.name })
-        this.loadData()
-      }
-    } catch (e) {
-      console.error('reverseGeocode failed:', e)
-    }
-  },
-
-  async reverseGeocode(lat, lng) {
-    try {
-      const result = await api.reverseGeocode(lat, lng)
-      if (result && result.id) {
-        const locData = { id: result.id, name: result.name }
-        wx.setStorageSync('userLocation', locData)
-        this.setData({ locationId: result.id, locationName: result.name })
-      } else {
-        this.setData({ locationId: '101010100', locationName: '北京' })
-      }
-    } catch (e) {
-      console.error('reverseGeocode failed:', e)
-      this.setData({ locationId: '101010100', locationName: '北京' })
     }
     this.loadData()
   },
 
   onLocationTap() {
-    this.onChangeCity()
-  },
-
-  requestLocationAuth() {
-    wx.authorize({ scope: 'scope.userLocation', success: () => {
-      this.setData({ locationAuthorized: true })
-      this.getLocation()
-    }, fail: () => {
-      wx.showModal({
-        title: '位置授权',
-        content: '需要获取您的位置来提供当地天气穿搭建议，是否前往设置开启？',
-        confirmText: '去设置',
-        cancelText: '暂不',
-        success: (res) => {
-          if (res.confirm) {
-            wx.openSetting({ success: (settingRes) => {
-              if (settingRes.authSetting['scope.userLocation']) {
-                this.setData({ locationAuthorized: true })
-                this.getLocation()
-              }
-            }})
-          }
-        }
-      })
-    }})
-  },
-
-  onChangeCity() {
     const cities = Object.entries(CITY_MAP)
     wx.showActionSheet({
       itemList: cities.map(([, name]) => name),
       success: (res) => {
         const [id, name] = cities[res.tapIndex]
-        const locData = { id, name }
-        wx.setStorageSync('userLocation', locData)
+        wx.setStorageSync('userLocation', { id, name })
         this.setData({ locationId: id, locationName: name, locationAuthorized: true })
         this.loadData()
       }
     })
   },
 
-async loadData() {
+  async loadData() {
     console.log('[index] loadData START')
     const fallbackWeather = { temp: '--', condition: '请配置云环境', wind: '', humidity: 0, icon: '', tip: '云函数未部署，天气数据暂不可用' }
     try {
       const db = wx.cloud.database()
-      const clothesCount = await db.collection("clothes").where({ user_id: "{openid}" }).count()
-      const outfitCount = await db.collection("outfits").where({ _openid: "{openid}", status: "accepted" }).count()
+      const clothesCount = await db.collection('clothes').where({ user_id: '{openid}' }).count()
+      const outfitCount = await db.collection('outfits').where({ _openid: '{openid}', status: 'accepted' }).count()
       this.setData({ clothesCount: clothesCount.total, outfitCount: outfitCount.total })
       const weatherRes = await api.getWeather(this.data.locationId).catch(() => null)
       if (weatherRes && weatherRes.temp !== '--') { this.setData({ weather: weatherRes }) }
       else { this.setData({ weather: fallbackWeather }) }
       const dailyRes = await api.getDailyRecommend().catch(() => null)
-      console.log('[index] dailyRes:', JSON.stringify(dailyRes).substring(0,200))
+      console.log('[index] dailyRes:', JSON.stringify(dailyRes).substring(0, 200))
       if (dailyRes && dailyRes.outfit) {
         const outfit = dailyRes.outfit
         outfit.scoreText = (outfit.score * 100).toFixed(0) + '%'
         const items = outfit.items || []
         const ids = items.map(i => i.id).filter(Boolean)
         if (ids.length > 0) {
-
           const clothRes = await db.collection('clothes').where({ _id: db.command.in(ids) }).get()
           const clothMap = {}
           clothRes.data.forEach(c => { clothMap[c._id] = c })
@@ -215,12 +142,3 @@ async loadData() {
     return { title: '智能穿搭助手 - AI天气穿搭推荐', path: '/pages/index/index' }
   }
 })
-
-
-
-
-
-
-
-
-

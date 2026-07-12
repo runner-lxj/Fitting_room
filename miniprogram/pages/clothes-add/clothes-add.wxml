@@ -1,21 +1,23 @@
-﻿<view class="page {{themeClass}}">
+<view class="page {{themeClass}}">`n  <!-- 状态栏占位 -->`n  <view style="height: {{statusBarHeight}}px;"></view>
+  <!-- 标题区 -->
   <view class="gradient-header short">
     <text class="page-title">添加衣服</text>
     <text class="page-sub" wx:if="{{uploadList.length > 0}}">{{uploadList.length}}/9 张</text>
   </view>
 
-  <!-- 已上传图片列表 -->
-  <view class="upload-list" wx:if="{{uploadList.length > 0}}">
-    <view class="upload-item card" wx:for="{{uploadList}}" wx:key="tempPath" 
-          bindtap="editItem" data-index="{{index}}">
-      <image class="item-thumb" src="{{item.tempPath}}" mode="aspectFill"></image>
+  <!-- 已上传图片网格 -->
+  <view class="upload-grid" wx:if="{{uploadList.length > 0}}">
+    <view class="upload-item" wx:for="{{uploadList}}" wx:key="tempPath" bindtap="editItem" data-index="{{index}}">
+      <view class="upload-thumb">
+        <image class="upload-thumb-img" src="{{item.tempPath}}" mode="aspectFill"></image>
+      </view>
       
       <!-- 状态角标 -->
-      <view class="status-badge badge-{{item.status}}">
+      <view class="upload-badge badge-{{item.status}}">
         <text wx:if="{{item.status === 'uploading'}}">上传中</text>
         <text wx:elif="{{item.status === 'pending'}}">排队中</text>
-        <text wx:elif="{{item.status === 'recognizing'}}">识别中</text>
-        <text wx:elif="{{item.status === 'recognized'}}">✓ {{item.name}}</text>
+        <text wx:elif="{{item.status === 'recognizing'}}">识别中...</text>
+        <text wx:elif="{{item.status === 'recognized'}}">OK {{item.name}}</text>
         <text wx:elif="{{item.status === 'failed'}}">识别失败</text>
       </view>
 
@@ -25,25 +27,29 @@
       </view>
 
       <!-- 删除按钮 -->
-      <view class="remove-btn" catchtap="removeItem" data-index="{{index}}">✕</view>
+      <view class="upload-remove" catchtap="removeItem" data-index="{{index}}">
+        <text class="svg-placeholder">•</text>
+      </view>
     </view>
   </view>
 
-  <!-- 上传按钮（还可以继续添加） -->
+  <!-- 上传区域 -->
   <view class="upload-section" wx:if="{{uploadList.length < 9}}">
     <view class="upload-area" bindtap="chooseImage">
-      <text class="upload-icon">📷</text>
+      <text class="svg-placeholder">•</text>
       <text class="upload-text">继续添加</text>
       <text class="upload-hint">还可以添加 {{9 - uploadList.length}} 张</text>
     </view>
   </view>
 
   <!-- 编辑弹窗 -->
-  <view class="edit-mask" wx:if="{{editIndex >= 0}}" bindtap="editIndex = -1">
+  <view class="edit-mask" wx:if="{{editIndex >= 0}}" bindtap="closeEdit">
     <view class="edit-panel" catchtap="">
       <view class="edit-header">
         <text class="edit-title">编辑识别结果</text>
-        <text class="edit-close" bindtap="editIndex = -1">✕</text>
+        <view class="edit-close" bindtap="closeEdit">
+          <text class="svg-placeholder">•</text>
+        </view>
       </view>
       
       <view class="edit-form">
@@ -84,3 +90,4 @@
     <button class="btn-primary" bindtap="goBack">完成</button>
   </view>
 </view>
+

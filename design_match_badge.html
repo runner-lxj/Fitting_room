@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>搭配计数标记设计</title>
+<style>
+:root{--primary:#D4956A;--primary-light:#E8C4A8;--bg-page:#FAF8F5;--bg-card:#FFFFFF;--bg-input:#F5F0EB;--text-primary:#2C2520;--text-secondary:#9A8E82;--text-hint:#C8BEB4;--border:#EDE6DF;--shadow:0 2px 20px rgba(180,150,120,0.08);--gradient-main:linear-gradient(160deg,#D4956A 0%,#E8C4A8 100%);--radius-lg:20px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#f0eeeb;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:40px}
+.title{font-size:24px;font-weight:700;color:var(--text-primary)}
+.desc{font-size:13px;color:var(--text-secondary);text-align:center;max-width:500px;line-height:1.6}
+
+.phone{width:320px;background:var(--bg-page);border-radius:24px;overflow:hidden;box-shadow:0 10px 36px rgba(0,0,0,0.1);flex-shrink:0}
+.nav{height:72px;padding:36px 14px 0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--text-primary)}
+.content{padding:0 14px 14px}
+.w-title{font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:4px}
+.w-sub{font-size:11px;color:var(--text-secondary);margin-bottom:12px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tp{padding:5px 12px;border-radius:14px;font-size:11px;background:var(--bg-card);color:var(--text-secondary);font-weight:500;box-shadow:var(--shadow);border:1px solid rgba(212,149,106,0.06)}
+.tp.active{background:var(--gradient-main);color:#fff;border-color:transparent}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gi{background:var(--bg-card);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(212,149,106,0.06);position:relative}
+.gi-img{width:100%;height:120px;background:linear-gradient(135deg,#f5f0eb,#ede6df);display:flex;align-items:center;justify-content:center;position:relative}
+.gi-img img{width:100%;height:100%;object-fit:cover}
+
+/* 搭配计数角标 */
+.match-badge{position:absolute;top:6px;right:6px;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;color:#fff;z-index:5;display:flex;align-items:center;gap:3px;line-height:1.4}
+.match-badge svg{width:10px;height:10px;stroke:#fff;stroke-width:2}
+.match-badge.count-1{background:rgba(212,149,106,0.85)}
+.match-badge.count-2{background:rgba(194,132,122,0.85)}
+
+.gi-tags{padding:6px 8px;display:flex;gap:4px;flex-wrap:wrap}
+.tag{padding:2px 6px;border-radius:4px;font-size:9px;background:var(--bg-input);color:var(--secondary)}
+
+/* 说明 */
+.spec{max-width:500px;width:100%}
+.spec-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.spec-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:12px}
+.spec-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.spec-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.badge-demo{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;color:#fff;white-space:nowrap}
+.spec-text{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.spec-text strong{color:var(--text-primary)}
+</style>
+</head>
+<body>
+
+<div class="title">衣柜卡片 · 搭配计数角标</div>
+<div class="desc">衣服图片右上角显示已采纳搭配数，数据来源：outfits 集合中 status=accepted 且 items 包含该衣服的记录数</div>
+
+<div class="phone">
+  <div class="nav">我的衣柜</div>
+  <div class="content">
+    <div class="w-title">我的衣柜</div>
+    <div class="w-sub">共 6 件衣服</div>
+    <div class="tabs"><div class="tp active">全部 6</div><div class="tp">上衣 3</div><div class="tp">下装 2</div><div class="tp">连衣裙 1</div></div>
+    <div class="grid">
+      <!-- Item 1: 0套 - 无角标 -->
+      <div class="gi">
+        <div class="gi-img">
+          <svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px;stroke:#C8BEB4;opacity:0.4"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg>
+        </div>
+        <div class="gi-tags"><span class="tag">运动鞋</span></div>
+      </div>
+      <!-- Item 2: 1套 - 角标 -->
+      <div class="gi">
+        <div class="gi-img">
+          <div class="match-badge count-1">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+            已搭配1套
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px;stroke:#C8BEB4;opacity:0.4"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg>
+        </div>
+        <div class="gi-tags"><span class="tag">半袖</span></div>
+      </div>
+      <!-- Item 3: 2套 - 角标 -->
+      <div class="gi">
+        <div class="gi-img">
+          <div class="match-badge count-2">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+            已搭配2套
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px;stroke:#C8BEB4;opacity:0.4"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg>
+        </div>
+        <div class="gi-tags"><span class="tag">短裤</span></div>
+      </div>
+      <!-- Item 4: 0套 - 无角标 -->
+      <div class="gi">
+        <div class="gi-img">
+          <svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px;stroke:#C8BEB4;opacity:0.4"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg>
+        </div>
+        <div class="gi-tags"><span class="tag">短裤</span></div>
+      </div>
+      <!-- Item 5: 1套 -->
+      <div class="gi">
+        <div class="gi-img">
+          <div class="match-badge count-1">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg>
+            已搭配1套
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px;stroke:#C8BEB4;opacity:0.4"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg>
+        </div>
+        <div class="gi-tags"><span class="tag">毛衣</span></div>
+      </div>
+      <!-- Item 6: 0套 -->
+      <div class="gi">
+        <div class="gi-img">
+          <svg viewBox="0 0 24 24" fill="none" style="width:28px;height:28px;stroke:#C8BEB4;opacity:0.4"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg>
+        </div>
+        <div class="gi-tags"><span class="tag">配饰</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="spec">
+  <div class="spec-card">
+    <div class="spec-title">设计规范</div>
+    <div class="spec-row">
+      <div class="badge-demo" style="background:rgba(212,149,106,0.85)"><svg viewBox="0 0 24 24" fill="none" style="width:10px;height:10px;stroke:#fff;stroke-width:2"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg> 已搭配1套</div>
+      <div class="spec-text"><strong>位置：</strong>图片右上角，距边 6px<br><strong>样式：</strong>半透明暖杏色底 + 白色文字 + 星星图标<br><strong>圆角：</strong>8px</div>
+    </div>
+    <div class="spec-row">
+      <div class="badge-demo" style="background:rgba(194,132,122,0.85)"><svg viewBox="0 0 24 24" fill="none" style="width:10px;height:10px;stroke:#fff;stroke-width:2"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg> 已搭配2套</div>
+      <div class="spec-text"><strong>上限2套：</strong>达到2套后不再增加，<br>颜色加深表示已满配</div>
+    </div>
+    <div class="spec-row">
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
+        <strong style="color:var(--text-primary)">数据来源：</strong><br>
+        查询 outfits 集合 WHERE status='accepted' AND items 包含该衣服ID<br>
+        COUNT 作为 match_count<br>
+        <strong style="color:var(--text-primary)">仅统计已采纳：</strong>pending 的不算
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

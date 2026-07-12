@@ -1,6 +1,7 @@
-﻿{
+{
   "pages": [
     "pages/index/index",
+    "pages/privacy/privacy",
     "pages/wardrobe/wardrobe",
     "pages/my-outfits/my-outfits",
     "pages/profile/profile",
@@ -10,14 +11,14 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FF7E8D",
+    "navigationBarBackgroundColor": "#FAF8F5",
     "navigationBarTitleText": "穿搭助手",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#FFF5F5"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FAF8F5"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#FF7E8D",
+    "color": "#C8BEB4",
+    "selectedColor": "#D4956A",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
@@ -48,5 +49,12 @@
     ]
   },
   "cloud": true,
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于获取您所在城市的天气，提供穿搭建议"
+    }
+  },
+  "requiredPrivateInfos": ["getLocation"]
+
 }

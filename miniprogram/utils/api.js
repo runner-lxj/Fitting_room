@@ -1,82 +1,55 @@
-﻿// utils/api.js - MiMo API 封装
-const callMimo = async (messages, config = {}) => {
+// api.js - 云函数调用封装（含超时保护）
+
+function callCloud(name, data, timeout) {
+  if (wx.cloud && !wx.cloud._inited) { wx.cloud.init({ env: 'cloud1-d8gne3bjzb37229e4', traceUser: true }) }
+  timeout = timeout || 30000
   return new Promise((resolve, reject) => {
+    let done = false
+    const timer = setTimeout(() => {
+      if (!done) { done = true; reject(new Error("cloud timeout: " + name)) }
+    }, timeout)
     wx.cloud.callFunction({
-      name: 'outfit-recommend',
-      data: {
-        action: 'callMimo',
-        messages,
-        config: {
-          model: config.model || 'mimo-v2.5',
-          temperature: config.temperature || 0.7,
-          top_p: config.top_p || 0.95,
-          max_completion_tokens: config.max_completion_tokens || 4096
-        }
-      },
-      success: res => resolve(res.result),
-      fail: err => reject(err)
+      name, data,
+      success: res => { if (!done) { done = true; clearTimeout(timer); resolve(res.result) } },
+      fail: err => { if (!done) { done = true; clearTimeout(timer); reject(err) } }
     })
   })
 }
 
-// 衣物识别
 const recognizeClothes = async (imageFileID) => {
-  return new Promise((resolve, reject) => {
-    wx.cloud.callFunction({
-      name: 'clothes-add',
-      data: { action: 'recognize', imageFileID },
-      success: res => resolve(res.result),
-      fail: err => reject(err)
-    })
-  })
+  return callCloud("clothes-add", { action: "recognize", imageFileID })
 }
 
-// 获取搭配推荐
-const getOutfitRecommend = async () => {
-  return new Promise((resolve, reject) => {
-    wx.cloud.callFunction({
-      name: 'outfit-recommend',
-      data: { action: 'recommend' },
-      success: res => resolve(res.result),
-      fail: err => reject(err)
-    })
-  })
+// v0.4: 一键搭配 - 调用 MiMo 生成方案存 DB
+const generateOutfits = async () => {
+  return callCloud("outfit-recommend", { action: "generate" })
+}
+
+// v0.4: 今日推荐 - 从 accepted 方案中按天气筛选
+const getDailyRecommend = async () => {
+  return callCloud("outfit-recommend", { action: "daily" })
 }
 
 // 采纳搭配
 const acceptOutfit = async (outfitId) => {
-  return new Promise((resolve, reject) => {
-    wx.cloud.callFunction({
-      name: 'outfit-accept',
-      data: { outfitId },
-      success: res => resolve(res.result),
-      fail: err => reject(err)
-    })
-  })
+  return callCloud("outfit-accept", { outfitId })
 }
 
-// 获取天气
-const getWeather = async () => {
-  return new Promise((resolve, reject) => {
-    wx.cloud.callFunction({
-      name: 'outfit-recommend',
-      data: { action: 'getWeather' },
-      success: res => resolve(res.result),
-      fail: err => reject(err)
-    })
-  })
+// 舍弃搭配
+const rejectOutfit = async (outfitId) => {
+  return callCloud("outfit-accept", { outfitId, action: "reject" })
 }
 
-// 获取通知列表
+const getWeather = async (location) => {
+  return callCloud("outfit-recommend", { action: "getWeather", location: location || "101010100" })
+}
+
 const getNotifications = async () => {
-  return new Promise((resolve, reject) => {
-    wx.cloud.callFunction({
-      name: 'notification-list',
-      data: {},
-      success: res => resolve(res.result),
-      fail: err => reject(err)
-    })
-  })
+  return callCloud("notification-list", {})
 }
 
-module.exports = { callMimo, recognizeClothes, getOutfitRecommend, acceptOutfit, getWeather, getNotifications }
+const reverseGeocode = async (lat, lng) => {
+  return callCloud("outfit-recommend", { action: "reverseGeocode", lat, lng })
+}
+
+module.exports = { recognizeClothes, generateOutfits, getDailyRecommend, acceptOutfit, rejectOutfit, getWeather, getNotifications, reverseGeocode }

@@ -1,23 +1,81 @@
-﻿<view class="page {{themeClass}}">
-  <view class="gradient-header">
-    <text class="page-title">我的穿搭</text>
-    <text class="page-sub">共 {{records.length}} 套搭配</text>
-  </view>
-
-  <view class="outfit-list" wx:if="{{records.length > 0}}">
-    <view class="outfit-record card" wx:for="{{records}}" wx:key="_id" bindtap="goDetail" data-id="{{item.outfit_id}}">
-      <image class="record-img" src="{{item.wardrobe_url}}" mode="aspectFill"></image>
-      <view class="record-info">
-        <text class="record-name">{{item.name}}</text>
-        <text class="record-date">{{item.date}}</text>
+<view class="page {{themeClass}}">
+  <!-- 标题区 -->
+  <view class="wardrobe-header">
+    <view class="header-row">
+      <view>
+        <text class="wardrobe-title">我的穿搭</text>
+        <text class="wardrobe-sub">共 {{totalCount}} 套方案</text>
+      </view>
+      <view class="gen-btn-sm {{generating ? 'disabled' : ''}}" bindtap="generateOutfits">
+        <view class="spinner" wx:if="{{generating}}"></view>
+        <text wx:else>✨</text>
+        <text>{{pendingCount > 0 ? '再来一批' : '一键搭配'}}</text>
       </view>
     </view>
   </view>
 
-  <view class="empty-state" wx:if="{{!loading && records.length === 0}}">
-    <text class="empty-icon">✨</text>
-    <text class="empty-text">还没有采纳过搭配</text>
-    <text class="empty-sub">去首页看看今天的推荐吧</text>
-    <button class="btn-primary empty-btn" bindtap="goHome">去看看</button>
+  <!-- Tab 切换 -->
+  <view class="tab-scroll">
+    <view class="tab-list">
+      <view class="wardrobe-tab {{currentTab === item.key ? 'active' : ''}}"
+            wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
+        <text>{{item.name}}</text>
+        <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-dots" wx:if="{{loading}}">
+    <view class="dot"></view>
+    <view class="dot"></view>
+    <view class="dot"></view>
+  </view>
+
+  <!-- 搭配列表 -->
+  <view class="outfit-list" wx:if="{{!loading && outfits.length > 0}}">
+    <view class="outfit-record" wx:for="{{outfits}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+      <view class="record-img">
+        <image wx:if="{{item.composition_url}}" src="{{item.composition_url}}" mode="aspectFill" class="record-img-inner"></image>
+        <image wx:elif="{{item.clothImages.length > 0}}" src="{{item.clothImages[0]}}" mode="aspectFill" class="record-img-inner"></image>
+        <text class="svg-placeholder" wx:else>•</text>
+      </view>
+      <view class="record-info">
+        <text class="record-name">{{item.name}}</text>
+        <text class="record-date">{{item.occasion}} · {{item.style_summary}}</text>
+        <view class="record-tags" wx:if="{{item.weather_tags.length > 0}}">
+          <text class="tag tag-accent" wx:for="{{item.weather_tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+        </view>
+      </view>
+      <view class="record-arrow">
+        <text class="svg-placeholder">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && outfits.length === 0}}">
+    <view class="empty-icon-box">
+      <text class="svg-placeholder">👗</text>
+    </view>
+    <text class="empty-text" wx:if="{{currentTab === 'pending'}}">还没有搭配方案</text>
+    <text class="empty-sub" wx:if="{{currentTab === 'pending'}}">点击右上角按钮，AI 帮你搭配</text>
+    <text class="empty-text" wx:if="{{currentTab === 'accepted'}}">暂无已采纳方案</text>
+    <text class="empty-sub" wx:if="{{currentTab === 'accepted'}}">在待采纳中选择喜欢的方案点击采纳</text>
+  </view>
+
+  <!-- AI 搭配浮窗 -->
+  <view class="float-card {{floatState}}" bindtap="onFloatTap">
+    <view class="float-header">
+      <view class="float-dot {{floatState === 'done' ? 'done' : 'pulse'}}"></view>
+      <text class="float-title">{{floatTitle}}</text>
+    </view>
+    <view class="float-progress" wx:if="{{floatState === 'generating'}}">
+      <view class="float-bar" style="width:{{floatPercent}}%"></view>
+    </view>
+    <text class="float-status">{{floatStatus}}</text>
+    <view class="float-btn {{floatState === 'done' ? 'show' : ''}}" wx:if="{{floatState === 'done'}}">
+      <text>查看方案</text>
+    </view>
   </view>
 </view>

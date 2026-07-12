@@ -1,0 +1,77 @@
+/* pages/privacy/privacy.wxss */
+.page {
+  min-height: 100vh;
+  background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 80rpx 40rpx 40rpx;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 1rpx;
+}
+
+.content {
+  flex: 1;
+  padding: 0 40rpx;
+}
+
+.section {
+  margin-bottom: 48rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.text {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  display: block;
+}
+
+.footer {
+  padding: 40rpx;
+  display: flex;
+  gap: 24rpx;
+}
+
+.btn-accept {
+  flex: 1;
+  background: var(--gradient-main);
+  color: white;
+  border-radius: 88rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.btn-accept::after {
+  border: none;
+}
+
+.btn-reject {
+  flex: 1;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border-radius: 88rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 30rpx;
+}
+
+.btn-reject::after {
+  border: none;
+}

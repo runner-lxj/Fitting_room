@@ -1,22 +1,22 @@
-﻿<!-- pages/wardrobe/wardrobe.wxml -->
 <view class="page {{themeClass}}">
-  <view class="gradient-header">
-    <view class="header-content">
-      <text class="page-title">我的衣柜</text>
-      <text class="page-sub">共 {{totalCount}} 件衣服</text>
-    </view>
+  <!-- 标题区 -->
+  <view class="wardrobe-header">
+    <text class="wardrobe-title">我的衣柜</text>
+    <text class="wardrobe-sub">共 {{totalCount}} 件衣服</text>
   </view>
 
   <!-- 分类 Tab -->
-  <scroll-view scroll-x class="tab-scroll" style="margin-top: -20rpx; position: relative; z-index: 3;">
-    <view class="tab-list">
-      <view class="tab-item {{currentTab === item.key ? 'active' : ''}}" 
-            wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
-        <text>{{item.name}}</text>
-        <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+  <view class="tab-scroll">
+    <scroll-view scroll-x class="tab-list-wrap">
+      <view class="tab-list">
+        <view class="wardrobe-tab {{currentTab === item.key ? 'active' : ''}}" 
+              wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
+          <text>{{item.name}}</text>
+          <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+        </view>
       </view>
-    </view>
-  </scroll-view>
+    </scroll-view>
+  </view>
 
   <!-- 二级分类筛选 -->
   <scroll-view scroll-x class="sub-tab-scroll" wx:if="{{subTabs.length > 0}}">
@@ -30,18 +30,29 @@
 
   <!-- 衣服网格 -->
   <view class="clothes-grid" wx:if="{{filteredClothes.length > 0}}">
-    <view class="clothes-item" wx:for="{{filteredClothes}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
-      <image class="clothes-img" src="{{item.cutout_url || item.original_url}}" mode="aspectFit"></image>
+    <view class="clothes-item" wx:for="{{filteredClothes}}" wx:key="_id" bindtap="goDetail" bindlongpress="onLongPress" data-id="{{item._id}}" data-index="{{index}}">
+      <view class="clothes-img-wrap">
+        <image class="clothes-img" wx:if="{{item.cutout_url || item.original_url}}" src="{{item.cutout_url || item.original_url}}" mode="aspectFit"></image>
+        <view class="clothes-img-placeholder" wx:else>
+          <text class="svg-placeholder">•</text>
+          <text>{{item.name || '衣服'}}</text>
+        </view>
+      </view>
       <view class="clothes-tags">
-        <text class="tag">{{item.subcategory}}</text>
-        <text class="tag color-tag" style="background: {{item.colorHex || '#f0f0f0'}};">{{item.color}}</text>
+        <text class="tag" wx:if="{{item.status === 'recognized'}}">{{item.subcategory}}</text>
+        <view class="match-badge count-{{item.match_count || 0}}" wx:if="{{item.match_count > 0}}">⭐ 已搭配{{item.match_count}}套</view>
+        <text class="tag tag-pending" wx:elif="{{item.status === 'recognizing'}}">识别中</text>
+        <text class="tag tag-failed" wx:elif="{{item.status === 'failed'}}">识别失败</text>
+        <text class="tag" wx:else>{{item.name || ''}}</text>
       </view>
     </view>
   </view>
 
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{!loading && filteredClothes.length === 0}}">
-    <text class="empty-icon">👔</text>
+    <view class="empty-icon-box">
+      <text class="svg-placeholder">•</text>
+    </view>
     <text class="empty-text">还没有衣服</text>
     <text class="empty-sub">拍照添加你的第一件衣服吧</text>
     <button class="btn-primary empty-btn" bindtap="goAdd">添加衣服</button>
@@ -51,4 +62,24 @@
   <view class="fab-btn" bindtap="goAdd">
     <text class="fab-icon">+</text>
   </view>
+
+  <view class="fab-generate {{generating ? 'hide' : ''}}" bindtap="generateOutfits">
+    <text class="fab-generate-icon">✨</text>
+  </view>
+
+  <!-- AI 搭配浮窗（右上角迷你卡片） -->
+  <view class="float-card {{floatState}}" bindtap="onFloatTap">
+    <view class="float-header">
+      <view class="float-dot {{floatState === 'done' ? 'done' : ''}}"></view>
+      <text class="float-title">{{floatTitle}}</text>
+    </view>
+    <view class="float-progress" wx:if="{{floatState === 'generating'}}">
+      <view class="float-bar" style="width:{{floatPercent}}%"></view>
+    </view>
+    <text class="float-status">{{floatStatus}}</text>
+    <view class="float-btn {{floatState === 'done' ? 'show' : ''}}" wx:if="{{floatState === 'done'}}">
+      <text>查看方案</text>
+    </view>
+  </view>
 </view>
+

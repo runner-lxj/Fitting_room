@@ -1,24 +1,277 @@
-﻿/* pages/wardrobe/wardrobe.wxss */
-.page { min-height: 100vh; background: var(--bg-page); padding-bottom: 120rpx; }
-.page-title { font-size: 40rpx; font-weight: 600; color: #FFF; display: block; }
-.page-sub { font-size: 26rpx; color: rgba(255,255,255,0.85); display: block; margin-top: 8rpx; }
+/* pages/wardrobe/wardrobe.wxss */
+.page {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding-bottom: 200rpx;
+}
 
-.tab-scroll { position: relative; z-index: 3; margin-top: -20rpx; padding: 0 32rpx; }
-.tab-list { display: flex; gap: 16rpx; white-space: nowrap; padding: 16rpx 0; }
-.tab-item { display: inline-flex; align-items: center; gap: 8rpx; padding: 14rpx 28rpx; border-radius: 999rpx; background: var(--bg-card); font-size: 26rpx; color: var(--text-secondary); box-shadow: var(--shadow); }
-.tab-item.active { background: var(--gradient-main); color: #FFF; }
-.tab-count { font-size: 20rpx; opacity: 0.7; }
+/* 标题区 */
+.wardrobe-header {
+  padding: 16rpx 40rpx 40rpx;
+}
+.wardrobe-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+.wardrobe-sub {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 8rpx;
+}
 
-.sub-tab-scroll { padding: 0 32rpx; }
-.sub-tab-list { display: flex; gap: 12rpx; white-space: nowrap; padding: 12rpx 0; }
-.sub-tab-item { display: inline-block; padding: 8rpx 20rpx; border-radius: 999rpx; background: var(--bg-card); font-size: 22rpx; color: var(--text-secondary); border: 1rpx solid var(--border); }
-.sub-tab-item.active { background: var(--bg-input); color: var(--primary); border-color: var(--primary); }
+/* Tab 区域 */
+.tab-scroll {
+  padding: 0 40rpx;
+  margin-top: -20rpx;
+  position: relative;
+  z-index: 3;
+}
 
-.clothes-grid { display: flex; flex-wrap: wrap; gap: 20rpx; padding: 24rpx 32rpx; }
-.clothes-item { width: calc(50% - 10rpx); background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow); }
-.clothes-img { width: 100%; height: 320rpx; background: #f8f8f8; }
-.clothes-tags { padding: 16rpx; display: flex; gap: 8rpx; flex-wrap: wrap; }
-.color-tag { min-width: 32rpx; height: 32rpx; padding: 2rpx 12rpx; border-radius: 999rpx; font-size: 20rpx; color: #666; }
+.tab-list-wrap {
+  white-space: nowrap;
+}
 
-.fab-btn { position: fixed; right: 40rpx; bottom: 200rpx; width: 100rpx; height: 100rpx; border-radius: 50%; background: var(--gradient-main); display: flex; align-items: center; justify-content: center; box-shadow: 0 8rpx 32rpx rgba(255,126,141,0.4); z-index: 100; }
-.fab-icon { font-size: 48rpx; color: #FFF; font-weight: 300; }
+.tab-list {
+  display: flex;
+  gap: 16rpx;
+  padding: 16rpx 0;
+}
+
+.wardrobe-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 16rpx 36rpx;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+  border: 1rpx solid rgba(212,149,106,0.06);
+  flex-shrink: 0;
+}
+
+.wardrobe-tab.active {
+  background: var(--gradient-main);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8rpx 32rpx rgba(212,149,106,0.2);
+}
+
+.tab-count {
+  font-size: 22rpx;
+  opacity: 0.7;
+}
+
+/* 二级分类 */
+.sub-tab-scroll {
+  padding: 0 40rpx;
+}
+
+.sub-tab-list {
+  display: flex;
+  gap: 16rpx;
+  padding: 12rpx 0;
+  white-space: nowrap;
+}
+
+.sub-tab-item {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  border: 1rpx solid var(--border);
+  flex-shrink: 0;
+}
+
+.sub-tab-item.active {
+  background: var(--bg-input);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* 衣服网格 - 对齐设计稿 */
+.clothes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  padding: 0 40rpx;
+}
+
+.clothes-item {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1rpx solid rgba(212,149,106,0.06);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.clothes-item:active {
+  transform: scale(0.98);
+}
+
+.clothes-img-wrap {
+  width: 100%;
+  height: 300rpx;
+  position: relative;
+}
+
+.clothes-img {
+  width: 100%;
+  height: 100%;
+}
+
+.clothes-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  background: linear-gradient(135deg, #f5f0eb 0%, #ede6df 100%);
+}
+
+.clothes-img-placeholder svg {
+  width: 64rpx;
+  height: 64rpx;
+  stroke: var(--text-hint);
+  stroke-width: 1;
+  opacity: 0.4;
+}
+
+.clothes-img-placeholder text {
+  font-size: 22rpx;
+  color: var(--text-hint);
+}
+
+/* 标签区 - 设计稿: padding:10px 12px */
+.clothes-tags {
+  padding: 20rpx 24rpx;
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.color-dot {
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 50%;
+  border: 3rpx solid rgba(0,0,0,0.06);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* 悬浮按钮 - 设计稿 */
+.fab-btn {
+  position: fixed;
+  right: 40rpx;
+  bottom: 200rpx;
+  width: 104rpx;
+  height: 104rpx;
+  border-radius: 50%;
+  background: var(--gradient-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 40rpx rgba(212,149,106,0.3);
+  z-index: 100;
+}
+
+.fab-icon {
+  font-size: 48rpx;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1;
+}
+
+/* 衣服状态角标 */
+.clothes-status {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  z-index: 5;
+}
+.clothes-status.recognized { background: #52c41a; }
+.clothes-status.recognizing { background: #faad14; animation: pulse 1s infinite; }
+.clothes-status.failed { background: #ff4d4f; }
+.clothes-status.pending { background: #d9d9d9; }
+
+.tag-pending { color: #faad14; background: rgba(250,173,20,0.1); }
+.tag-failed { color: #ff4d4f; background: rgba(255,77,79,0.1); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+
+/* 一键搭配按钮 */
+.btn-generate {
+  background: var(--gradient-main);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 16rpx 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin: 16rpx 0;
+  box-shadow: 0 4rpx 16rpx rgba(212,149,106,0.3);
+}
+.btn-generate::after { border: none; }
+
+/* 搭配计数角标 */
+.match-badge {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #fff;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  line-height: 1.4;
+}
+.match-badge.count-1 {
+  background: rgba(212,149,106,0.85);
+}
+.match-badge.count-2 {
+  background: rgba(194,132,122,0.85);
+}
+
+.btn-reset { background: var(--bg-input); color: var(--text-secondary); border: 1rpx solid var(--border); border-radius: var(--radius-full); padding: 12rpx 32rpx; font-size: 24rpx; margin: 8rpx 0; }
+.btn-reset::after { border: none; }
+
+/* 按钮行 */
+.btn-row {
+  display: flex;
+  gap: 16rpx;
+  margin: 16rpx 0;
+}
+.btn-row .btn-generate {
+  flex: 2;
+  margin: 0;
+}
+.btn-row .btn-reset {
+  flex: 1;
+  margin: 0;
+}
+

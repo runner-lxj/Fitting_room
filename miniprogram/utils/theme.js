@@ -1,8 +1,8 @@
-﻿// utils/theme.js - 主题工具
+// utils/theme.js - 主题工具（柔光杂志）
 const THEMES = {
-  default: { name: '樱花粉', primary: '#FF7E8D', icon: '🌸' },
-  mint: { name: '薄荷绿', primary: '#7ECFB3', icon: '🍃' },
-  purple: { name: '暗夜紫', primary: '#6C5CE7', icon: '🌙' }
+  default: { name: '奶油白', primary: '#D4956A', icon: '' },
+  blue: { name: '雾霾蓝', primary: '#7B9EB8', icon: '' },
+  lavender: { name: '薰衣草', primary: '#A08DB0', icon: '' }
 }
 
 const getThemeClass = () => {
@@ -12,7 +12,7 @@ const getThemeClass = () => {
 
 const getThemeName = () => {
   const theme = wx.getStorageSync('theme') || 'default'
-  return THEMES[theme]?.name || '樱花粉'
+  return THEMES[theme]?.name || '奶油白'
 }
 
 const getAllThemes = () => {

@@ -1,8 +1,10 @@
-﻿<view class="page {{themeClass}}">
+<view class="page {{themeClass}}">`n  <!-- 状态栏占位 -->`n  <view style="height: {{statusBarHeight}}px;"></view>
+  <!-- 标题区 -->
   <view class="gradient-header short">
     <text class="page-title">管理员配置</text>
   </view>
 
+  <!-- MiMo 模型配置 -->
   <view class="config-section card">
     <text class="section-label">MiMo 模型配置</text>
     
@@ -33,6 +35,7 @@
     </view>
   </view>
 
+  <!-- 系统提示词 -->
   <view class="config-section card">
     <text class="section-label">系统提示词</text>
     <textarea class="prompt-input" value="{{config.system_prompt}}" 

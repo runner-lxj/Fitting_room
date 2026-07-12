@@ -1,17 +1,22 @@
-﻿<!-- pages/index/index.wxml - 首页 -->
 <view class="page {{themeClass}}">
-  <!-- 渐变头部 -->
-  <view class="gradient-header">
-    <view class="header-content">
-      <view class="greeting">
-        <text class="greeting-text">{{greeting}}，{{userName}}</text>
-        <text class="greeting-sub">今天穿什么？让我来帮你搭配</text>
+  <view class="home-header animate-in">
+    <view class="home-header-row">
+      <view>
+        <text class="home-greeting">{{greeting}}{{userName ? "，" + userName : ""}}</text>
+        <text class="home-greeting-sub">{{outfitSuggestion}}</text>
+        <view class="home-location" bindtap="onLocationTap">
+          <text class="loc-emoji">📍</text>
+          <text>{{locationName}}</text>
+          <text class="location-switch-text" bindtap="onChangeCity">切换</text>
+        </view>
+      </view>
+      <view class="digital-avatar">
+        <image class="digital-avatar-img" src="/static/images/avatar-character.png" mode="aspectFit"></image>
       </view>
     </view>
   </view>
 
-  <!-- 天气卡片 -->
-  <view class="weather-section" style="margin-top: -20rpx;">
+  <view class="section-padding animate-in animate-delay-1">
     <view class="card weather-card">
       <view class="weather-main">
         <view class="weather-temp">
@@ -22,68 +27,76 @@
           <text class="weather-desc">{{weather.condition}}</text>
           <text class="weather-detail">{{weather.wind}} · 湿度 {{weather.humidity}}%</text>
         </view>
-        <image class="weather-icon" src="{{weather.icon}}" mode="aspectFit"></image>
+        <view class="weather-icon-box">
+          <text class="weather-emoji">☁️</text>
+        </view>
       </view>
       <view class="weather-tip">
-        <text class="tip-icon">💡</text>
-        <text class="tip-text">{{weather.tip}}</text>
+        <text class="tip-emoji">💡</text>
+        <text>{{weather.tip}}</text>
       </view>
     </view>
   </view>
 
-  <!-- 今日推荐 -->
-  <view class="section">
+  <view class="section-padding animate-in animate-delay-2">
     <view class="section-header">
       <text class="section-title">今日推荐</text>
       <text class="section-more" bindtap="refreshOutfits">换一批</text>
     </view>
-
-    <!-- 加载中 -->
     <view class="loading-dots" wx:if="{{loading}}">
       <view class="dot"></view>
       <view class="dot"></view>
       <view class="dot"></view>
     </view>
-
-    <!-- 推荐列表 -->
-    <scroll-view scroll-x class="outfit-scroll" wx:if="{{!loading && outfits.length > 0}}">
-      <view class="outfit-item card" wx:for="{{outfits}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
-        <image class="outfit-img" src="{{item.composition_url}}" mode="aspectFill"></image>
-        <view class="outfit-info">
-          <text class="outfit-name">{{item.name}}</text>
-          <text class="outfit-occasion">{{item.occasion}}</text>
+    <view class="outfit-single-wrap" wx:if="{{!loading && outfits.length > 0}}" bindtap="goDetail" data-id="{{outfits[0]._id}}">
+      <view class="outfit-single-card">
+        <view class="outfit-cloth-grid">
+          <view class="outfit-cloth-item" wx:for="{{outfits[0].clothImages}}" wx:key="*this">
+            <image class="outfit-cloth-img" src="{{item}}" mode="aspectFill"></image>
+          </view>
+          <view class="outfit-cloth-item outfit-cloth-empty" wx:if="{{!outfits[0].clothImages || outfits[0].clothImages.length === 0}}">
+            <text class="svg-placeholder">•</text>
+          </view>
         </view>
-        <view class="outfit-score">
-          <text class="score-num">{{item.scoreText}}</text>
+        <view class="outfit-info">
+          <text class="outfit-name">{{outfits[0].name}}</text>
+          <text class="outfit-occasion">{{outfits[0].occasion}}</text>
         </view>
       </view>
-    </scroll-view>
-
-    <!-- 空状态 -->
+    </view>
     <view class="empty-state" wx:if="{{!loading && outfits.length === 0}}">
-      <text class="empty-icon">👗</text>
-      <text class="empty-text">衣柜空空如也</text>
-      <text class="empty-sub">先添加几件衣服，我来帮你搭配</text>
-      <button class="btn-primary empty-btn" bindtap="goWardrobe">去衣柜</button>
+      <view class="empty-icon-box">
+        <text class="svg-placeholder">•</text>
+      </view>
+      <text class="empty-text">还没有搭配方案</text>
+      <text class="empty-sub">去衣柜添加衣服，然后一键搭配</text>
+      <button class="btn-primary empty-btn" bindtap="goOutfits">去搭配</button>
     </view>
   </view>
 
-  <!-- 快捷入口 -->
-  <view class="quick-actions">
-    <view class="action-item" bindtap="goWardrobe">
-      <view class="action-icon" style="background: var(--gradient-warm);">👗</view>
-      <text class="action-text">我的衣柜</text>
-      <text class="action-count">{{clothesCount}} 件</text>
-    </view>
-    <view class="action-item" bindtap="goAddClothes">
-      <view class="action-icon" style="background: var(--gradient-cool);">📸</view>
-      <text class="action-text">添加衣服</text>
-      <text class="action-sub">拍照入库</text>
-    </view>
-    <view class="action-item" bindtap="goMyOutfits">
-      <view class="action-icon" style="background: var(--gradient-main);">✨</view>
-      <text class="action-text">我的穿搭</text>
-      <text class="action-count">{{outfitCount}} 套</text>
+  <view class="section-padding animate-in animate-delay-3">
+    <view class="quick-actions">
+      <view class="action-item" bindtap="goWardrobe">
+        <view class="action-icon" style="background: var(--gradient-warm);">
+          <text class="action-emoji">👔</text>
+        </view>
+        <text class="action-text">我的衣柜</text>
+        <text class="action-count">{{clothesCount}} 件</text>
+      </view>
+      <view class="action-item" bindtap="goAddClothes">
+        <view class="action-icon" style="background: var(--gradient-cool);">
+          <text class="action-emoji">📷</text>
+        </view>
+        <text class="action-text">添加衣服</text>
+        <text class="action-count">拍照入库</text>
+      </view>
+      <view class="action-item" bindtap="goMyOutfits">
+        <view class="action-icon" style="background: var(--gradient-main);">
+          <text class="action-emoji">⭐</text>
+        </view>
+        <text class="action-text">我的穿搭</text>
+        <text class="action-count">{{outfitCount}} 套</text>
+      </view>
     </view>
   </view>
 </view>

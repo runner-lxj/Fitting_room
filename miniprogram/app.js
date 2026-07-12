@@ -1,48 +1,63 @@
-﻿// app.js - 全局逻辑 + 主题管理
 App({
   onLaunch() {
-    // 初始化云开发
-    if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力')
-    } else {
-      wx.cloud.init({ traceUser: true })
+    if (wx.cloud) {
+      wx.cloud.init({ env: 'cloud1-d8gne3bjzb37229e4', traceUser: true })
     }
 
-    // 加载主题设置
     const theme = wx.getStorageSync('theme') || 'default'
     this.globalData.theme = theme
 
-    // 获取用户信息
     const userInfo = wx.getStorageSync('userInfo')
     if (userInfo) {
       this.globalData.userInfo = userInfo
+    } else {
+      this.autoLogin()
     }
   },
 
-  // 切换主题
-  setTheme(themeName) {
-    this.globalData.theme = themeName
-    wx.setStorageSync('theme', themeName)
-    // 通知所有页面刷新
-    const pages = getCurrentPages()
-    pages.forEach(p => {
-      if (p.onThemeChange) p.onThemeChange(themeName)
+  autoLogin() {
+    if (!wx.cloud) {
+      this.globalData.userInfo = { nickName: '穿搭用户', avatarUrl: '' }
+      return
+    }
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("login timeout")), 8000))
+    Promise.race([
+      wx.cloud.callFunction({ name: "user-login", data: {} }),
+      timeout
+    ]).then(res => {
+      if (res.result && res.result.userInfo) {
+        const info = res.result.userInfo
+        wx.setStorageSync('userInfo', info)
+        this.globalData.userInfo = info
+      }
+    }).catch(e => {
+      console.error('auto login failed:', e)
+      const info = { nickName: '穿搭用户', avatarUrl: '' }
+      wx.setStorageSync('userInfo', info)
+      this.globalData.userInfo = info
     })
   },
 
-  // 检查是否管理员
+  checkPrivacy() {
+    return !!wx.getStorageSync('privacy_accepted')
+  },
+
+  setTheme(themeName) {
+    this.globalData.theme = themeName
+    wx.setStorageSync('theme', themeName)
+    const pages = getCurrentPages()
+    pages.forEach(p => { if (p.onThemeChange) p.onThemeChange(themeName) })
+  },
+
   checkAdmin() {
-    const phone = this.globalData.userInfo?.phone
-    return phone === 'ADMIN_PHONE'
+    return this.globalData.userInfo?.is_admin === true
   },
 
   globalData: {
     theme: 'default',
     userInfo: null,
-    themeMap: {
-      'default': '樱花粉',
-      'mint': '薄荷绿',
-      'purple': '暗夜紫'
-    }
+    themeMap: { 'default': '奶油白', 'blue': '雾霾蓝', 'lavender': '薰衣草' }
   }
 })
+
+

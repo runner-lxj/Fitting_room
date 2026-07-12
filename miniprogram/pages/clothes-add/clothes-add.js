@@ -1,4 +1,4 @@
-﻿// pages/clothes-add/clothes-add.js
+// pages/clothes-add/clothes-add.js
 const { getThemeClass } = require('../../utils/theme')
 const db = wx.cloud.database()
 
@@ -27,9 +27,11 @@ Page({
   },
 
   onLoad() {
+    const sysInfo = wx.getSystemInfoSync()
     this.setData({
       themeClass: getThemeClass(),
-      categoryOptions: Object.values(CATEGORY_MAP).map(c => c.name)
+      categoryOptions: Object.values(CATEGORY_MAP).map(c => c.name),
+      statusBarHeight: sysInfo.statusBarHeight || 0
     })
   },
 
@@ -213,6 +215,10 @@ Page({
     this.setData({ uploadList: list })
   },
 
+  // ===== 关闭编辑弹窗 =====
+  closeEdit() { this.setData({ editIndex: -1 }) },
+
   // 返回衣柜
   goBack() { wx.navigateBack() }
 })
+

@@ -1,18 +1,36 @@
-﻿<view class="page {{themeClass}}">
+<view class="page {{themeClass}}">  <!-- 状态栏占位 -->  <view style="height: {{statusBarHeight}}px;"></view>
+  <!-- 大图 Hero 区 -->
   <view class="detail-hero">
-    <image class="hero-img" src="{{outfit.composition_url}}" mode="aspectFit" bindtap="previewImage"></image>
+    <view class="detail-back" bindtap="goBack">
+      <text class="svg-placeholder">•</text>
+    </view>
+    <image class="hero-img" wx:if="{{outfit.composition_url}}" src="{{outfit.composition_url}}" mode="aspectFit" bindtap="previewImage"></image>
+    <text class="svg-placeholder">•</text>
+    <view class="detail-hero-badge" wx:if="{{outfit.score}}">
+      <text class="svg-placeholder">•</text>
+      匹配 {{outfit.scoreText}}
+    </view>
   </view>
   
   <view class="detail-body">
+    <!-- AI 搭配理由 -->
+    <view class="card ai-reason-card" wx:if="{{outfit.ai_reason}}">
+      <view class="ai-reason-header">
+        <text class="info-emoji">ℹ️</text>
+        <text class="ai-reason-title">AI 搭配理由</text>
+      </view>
+      <text class="ai-reason-text">{{outfit.ai_reason}}</text>
+    </view>
+
+    <!-- 搭配信息 -->
     <view class="card">
       <view class="detail-header">
         <text class="detail-name">{{outfit.name}}</text>
         <view class="detail-meta">
-          <text class="tag">{{outfit.weather_context}}</text>
-          <text class="tag">{{outfit.occasion}}</text>
+          <text class="tag tag-accent" wx:if="{{outfit.weather_context}}">{{outfit.weather_context}}</text>
+          <text class="tag tag-accent" wx:if="{{outfit.occasion}}">{{outfit.occasion}}</text>
         </view>
       </view>
-      <view class="divider"></view>
       <text class="detail-desc">{{outfit.description}}</text>
     </view>
 
@@ -21,22 +39,30 @@
       <text class="card-title">搭配单品</text>
       <view class="items-list">
         <view class="item-row" wx:for="{{displayItems}}" wx:key="id">
-          <image class="item-img" src="{{item.image}}" mode="aspectFit"></image>
+          <view class="item-img">
+            <image wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFit" class="item-img-inner"></image>
+            <text class="svg-placeholder">•</text>
+          </view>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <text class="item-cat">{{item.categoryLabel}}</text>
           </view>
+          <text class="svg-placeholder">•</text>
         </view>
       </view>
     </view>
+  </view>
 
-    <!-- 操作按钮 -->
-    <view class="action-bar safe-bottom" wx:if="{{outfit.status === 'pending'}}">
-      <button class="btn-secondary action-btn" bindtap="rejectOutfit">舍弃</button>
-      <button class="btn-primary action-btn" bindtap="acceptOutfit">✨ 采纳搭配</button>
-    </view>
-    <view class="action-bar safe-bottom" wx:else>
-      <text class="accepted-text">✅ 已采纳</text>
-    </view>
+  <!-- 底部操作栏 -->
+  <view class="action-bar safe-bottom" wx:if="{{outfit.status === 'pending'}}">
+    <button class="btn-secondary" bindtap="rejectOutfit">舍弃</button>
+    <button class="btn-primary" bindtap="acceptOutfit">
+      <text class="svg-placeholder">•</text>
+      采纳搭配
+    </button>
+  </view>
+  <view class="action-bar safe-bottom" wx:else>
+    <text class="accepted-text">已采纳</text>
   </view>
 </view>
+

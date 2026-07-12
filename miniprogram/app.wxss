@@ -1,26 +1,26 @@
-﻿/* ========== 全局设计 Token 系统 ========== */
+/* ========== 全局设计 Token 系统 — 柔光杂志 ========== */
 
-/* --- 樱花粉主题（默认） --- */
+/* --- 奶油白主题（默认） --- */
 page {
-  --primary: #FF7E8D;
-  --primary-light: #FFB5C2;
-  --primary-dark: #E8556A;
-  --secondary: #B8A9C9;
-  --accent: #FFD4A8;
-  --bg-page: #FFF5F5;
+  --primary: #D4956A;
+  --primary-light: #E8C4A8;
+  --primary-dark: #B87040;
+  --secondary: #8B7D6B;
+  --accent: #C2847A;
+  --bg-page: #FAF8F5;
   --bg-card: #FFFFFF;
-  --bg-input: #FFF0F0;
-  --text-primary: #2D2D3A;
-  --text-secondary: #8E8E9A;
-  --text-hint: #C0C0CC;
-  --border: #F0E0E4;
-  --shadow: 0 4rpx 24rpx rgba(255, 126, 141, 0.12);
-  --gradient-main: linear-gradient(135deg, #FF7E8D 0%, #FFB5C2 100%);
-  --gradient-warm: linear-gradient(135deg, #FFD4A8 0%, #FFB5C2 100%);
-  --gradient-cool: linear-gradient(135deg, #B8A9C9 0%, #FFB5C2 100%);
+  --bg-input: #F5F0EB;
+  --text-primary: #2C2520;
+  --text-secondary: #9A8E82;
+  --text-hint: #C8BEB4;
+  --border: #EDE6DF;
+  --shadow: 0 2rpx 20rpx rgba(180,150,120,0.08);
+  --gradient-main: linear-gradient(160deg, #D4956A 0%, #E8C4A8 100%);
+  --gradient-warm: linear-gradient(160deg, #E8C4A8 0%, #C2847A 100%);
+  --gradient-cool: linear-gradient(160deg, #A08DB0 0%, #E8C4A8 100%);
   --radius-sm: 8rpx;
   --radius-md: 16rpx;
-  --radius-lg: 24rpx;
+  --radius-lg: 20rpx;
   --radius-full: 999rpx;
   --spacing-xs: 8rpx;
   --spacing-sm: 16rpx;
@@ -29,44 +29,44 @@ page {
   --spacing-xl: 48rpx;
 }
 
-/* --- 薄荷绿主题 --- */
-page.theme-mint {
-  --primary: #7ECFB3;
-  --primary-light: #A8E6CF;
-  --primary-dark: #5BAF93;
-  --secondary: #A8D8EA;
-  --accent: #FFD3B6;
-  --bg-page: #F0FAF5;
+/* --- 雾霾蓝主题 --- */
+page.theme-blue {
+  --primary: #7B9EB8;
+  --primary-light: #B0C8DA;
+  --primary-dark: #5A7F9A;
+  --secondary: #8B7D6B;
+  --accent: #C2847A;
+  --bg-page: #F4F7FA;
   --bg-card: #FFFFFF;
-  --bg-input: #E8F8F0;
-  --text-primary: #2D3A2F;
-  --text-secondary: #7A8E7C;
-  --text-hint: #B8C8BA;
-  --border: #D0E8D8;
-  --shadow: 0 4rpx 24rpx rgba(126, 207, 179, 0.12);
-  --gradient-main: linear-gradient(135deg, #7ECFB3 0%, #A8E6CF 100%);
-  --gradient-warm: linear-gradient(135deg, #FFD3B6 0%, #A8E6CF 100%);
-  --gradient-cool: linear-gradient(135deg, #A8D8EA 0%, #A8E6CF 100%);
+  --bg-input: #EBF0F5;
+  --text-primary: #2C2520;
+  --text-secondary: #9A8E82;
+  --text-hint: #C8BEB4;
+  --border: #D8E2EA;
+  --shadow: 0 2rpx 20rpx rgba(123,158,184,0.08);
+  --gradient-main: linear-gradient(160deg, #7B9EB8 0%, #B0C8DA 100%);
+  --gradient-warm: linear-gradient(160deg, #B0C8DA 0%, #C2847A 100%);
+  --gradient-cool: linear-gradient(160deg, #A08DB0 0%, #B0C8DA 100%);
 }
 
-/* --- 暗夜紫主题 --- */
-page.theme-purple {
-  --primary: #6C5CE7;
-  --primary-light: #A29BFE;
-  --primary-dark: #5A4BD1;
-  --secondary: #FD79A8;
-  --accent: #FFEAA7;
-  --bg-page: #F0EEFF;
+/* --- 薰衣草主题 --- */
+page.theme-lavender {
+  --primary: #A08DB0;
+  --primary-light: #C4B8D4;
+  --primary-dark: #7E6B90;
+  --secondary: #8B7D6B;
+  --accent: #C2847A;
+  --bg-page: #F7F3FA;
   --bg-card: #FFFFFF;
-  --bg-input: #EDE8FF;
-  --text-primary: #2D2D3A;
-  --text-secondary: #8E8EA0;
-  --text-hint: #C0B8D8;
-  --border: #DDD8F0;
-  --shadow: 0 4rpx 24rpx rgba(108, 92, 231, 0.12);
-  --gradient-main: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
-  --gradient-warm: linear-gradient(135deg, #FD79A8 0%, #A29BFE 100%);
-  --gradient-cool: linear-gradient(135deg, #74B9FF 0%, #A29BFE 100%);
+  --bg-input: #F0EBF5;
+  --text-primary: #2C2520;
+  --text-secondary: #9A8E82;
+  --text-hint: #C8BEB4;
+  --border: #E0D8E8;
+  --shadow: 0 2rpx 20rpx rgba(160,141,176,0.08);
+  --gradient-main: linear-gradient(160deg, #A08DB0 0%, #C4B8D4 100%);
+  --gradient-warm: linear-gradient(160deg, #C4B8D4 0%, #C2847A 100%);
+  --gradient-cool: linear-gradient(160deg, #7B9EB8 0%, #C4B8D4 100%);
 }
 
 /* ========== 全局基础样式 ========== */
@@ -81,7 +81,7 @@ page {
 /* 渐变头部 */
 .gradient-header {
   background: var(--gradient-main);
-  padding: 80rpx 32rpx 48rpx;
+  padding: 16rpx 40rpx 40rpx;
   color: #FFFFFF;
   position: relative;
   overflow: hidden;
@@ -90,21 +90,41 @@ page {
 .gradient-header::after {
   content: '';
   position: absolute;
-  bottom: -40rpx;
+  bottom: -20rpx;
   left: 0;
   right: 0;
-  height: 80rpx;
+  height: 40rpx;
   background: var(--bg-page);
-  border-radius: 40rpx 40rpx 0 0;
+  border-radius: 20rpx 20rpx 0 0;
+}
+
+.gradient-header.short {
+  padding-bottom: 24rpx;
+}
+
+.page-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  display: block;
+  letter-spacing: 1rpx;
+}
+
+.page-sub {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.8);
+  display: block;
+  margin-top: 8rpx;
 }
 
 /* 卡片 */
 .card {
   background: var(--bg-card);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
+  border: 1rpx solid rgba(212,149,106,0.06);
 }
 
 /* 胶囊按钮 */
@@ -112,12 +132,13 @@ page {
   background: var(--gradient-main);
   color: #FFFFFF;
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
   padding: 20rpx 48rpx;
   font-size: 30rpx;
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
-  box-shadow: 0 8rpx 24rpx rgba(255, 126, 141, 0.3);
+  box-shadow: 0 8rpx 24rpx rgba(212,149,106,0.25);
+  letter-spacing: 1rpx;
 }
 
 .btn-primary::after {
@@ -127,11 +148,11 @@ page {
 .btn-secondary {
   background: var(--bg-card);
   color: var(--primary);
-  border: 2rpx solid var(--primary);
+  border: 3rpx solid var(--primary);
   border-radius: var(--radius-full);
   padding: 18rpx 48rpx;
   font-size: 30rpx;
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -142,11 +163,18 @@ page {
 /* 标签 */
 .tag {
   display: inline-block;
-  padding: 4rpx 16rpx;
-  border-radius: var(--radius-full);
+  padding: 6rpx 20rpx;
+  border-radius: var(--radius-sm);
   font-size: 22rpx;
   background: var(--bg-input);
-  color: var(--primary);
+  color: var(--secondary);
+  font-weight: 500;
+  letter-spacing: 0.6rpx;
+}
+
+.tag-accent {
+  background: rgba(212,149,106,0.1);
+  color: var(--primary-dark);
 }
 
 /* 分割线 */
@@ -171,6 +199,23 @@ page {
   height: 160rpx;
   margin-bottom: 32rpx;
   opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 12rpx;
+  color: var(--text-secondary);
+}
+
+.empty-sub {
+  font-size: 26rpx;
+  margin-bottom: 32rpx;
+  color: var(--text-hint);
+}
+
+.empty-btn {
+  margin-top: 16rpx;
 }
 
 /* 加载动画 */
@@ -200,4 +245,14 @@ page {
 /* 安全区适配 */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 页面入场动画 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.4s ease forwards;
 }

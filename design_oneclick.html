@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计方案 - 一键搭配 + 浮窗</title>
+<style>
+:root{--primary:#D4956A;--primary-light:#E8C4A8;--primary-dark:#B87040;--secondary:#8B7D6B;--bg-page:#FAF8F5;--bg-card:#FFFFFF;--bg-input:#F5F0EB;--text-primary:#2C2520;--text-secondary:#9A8E82;--text-hint:#C8BEB4;--border:#EDE6DF;--shadow:0 2px 20px rgba(180,150,120,0.08);--gradient-main:linear-gradient(160deg,#D4956A 0%,#E8C4A8 100%);--radius-lg:20px;--radius-full:24px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#e8e6e3;display:flex;flex-direction:column;align-items:center;padding:40px 20px;gap:60px}
+h2{font-size:20px;color:var(--text-primary);text-align:center}
+.desc{font-size:13px;color:var(--text-secondary);text-align:center;max-width:320px;margin-top:8px;line-height:1.6}
+.phone{width:375px;height:740px;background:var(--bg-page);border-radius:32px;overflow:hidden;position:relative;box-shadow:0 16px 48px rgba(0,0,0,0.12);flex-shrink:0}
+.nav{height:88px;padding:44px 20px 0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--text-primary)}
+.content{height:calc(100% - 88px - 68px);overflow-y:auto;padding:0 20px}
+.content::-webkit-scrollbar{display:none}
+.tab-bar{height:68px;background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-top:0.5px solid rgba(237,230,223,0.6);display:flex;position:absolute;bottom:0;left:0;right:0}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:8px}
+.tab-item svg{width:24px;height:24px;stroke:var(--text-hint);fill:none;stroke-width:1.8}
+.tab-item span{font-size:10px;color:var(--text-hint)}
+.tab-item.active svg{stroke:var(--primary)}
+.tab-item.active span{color:var(--primary);font-weight:600}
+
+/* Wardrobe content */
+.w-title{font-size:24px;font-weight:700;color:var(--text-primary);margin-bottom:4px}
+.w-sub{font-size:13px;color:var(--text-secondary);margin-bottom:16px}
+.tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab-pill{padding:8px 18px;border-radius:20px;font-size:13px;background:var(--bg-card);color:var(--text-secondary);font-weight:500;box-shadow:var(--shadow);white-space:nowrap;border:1px solid rgba(212,149,106,0.06);flex-shrink:0}
+.tab-pill.active{background:var(--gradient-main);color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-item{background:var(--bg-card);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(212,149,106,0.06)}
+.grid-img{width:100%;height:140px;background:linear-gradient(135deg,#f5f0eb,#ede6df);display:flex;align-items:center;justify-content:center}
+.grid-img svg{width:32px;height:32px;stroke:var(--text-hint);opacity:0.4}
+.grid-tags{padding:10px 12px;display:flex;gap:6px;flex-wrap:wrap}
+.tag{padding:3px 10px;border-radius:6px;font-size:11px;background:var(--bg-input);color:var(--secondary)}
+
+/* FAB */
+.fab{position:absolute;right:20px;bottom:88px;width:52px;height:52px;border-radius:50%;background:var(--gradient-main);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(212,149,106,0.3);z-index:10}
+.fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2}
+
+/* ========== DESIGN 1: FAB with tooltip ========== */
+.tooltip-bubble{position:absolute;right:80px;bottom:96px;background:var(--bg-card);border-radius:16px;padding:12px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.12);display:flex;align-items:center;gap:10px;z-index:20;white-space:nowrap}
+.tooltip-bubble::after{content:'';position:absolute;right:-6px;bottom:16px;width:12px;height:12px;background:var(--bg-card);transform:rotate(45deg);box-shadow:4px 4px 8px rgba(0,0,0,0.05)}
+.tooltip-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tooltip-icon.generating{background:rgba(212,149,106,0.1)}
+.tooltip-icon.done{background:rgba(76,175,80,0.1)}
+.tooltip-icon svg{width:20px;height:20px}
+.tooltip-text{font-size:13px;color:var(--text-primary);font-weight:500}
+.tooltip-sub{font-size:11px;color:var(--text-secondary);margin-top:2px}
+
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:20px;height:20px;border:2px solid var(--primary-light);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite}
+
+/* ========== DESIGN 2: Bottom pill bar ========== */
+.bottom-pill{position:absolute;bottom:76px;left:20px;right:20px;background:var(--bg-card);border-radius:16px;padding:14px 20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);display:flex;align-items:center;gap:14px;z-index:20}
+.pill-progress{width:40px;height:40px;border-radius:50%;position:relative;flex-shrink:0}
+.pill-progress svg{width:40px;height:40px;transform:rotate(-90deg)}
+.pill-progress circle{fill:none;stroke-width:3}
+.pill-bg{stroke:var(--border)}
+.pill-fill{stroke:var(--primary);stroke-linecap:round;stroke-dasharray:113;stroke-dashoffset:30;transition:stroke-dashoffset 0.3s}
+.pill-check{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:var(--primary);display:none;align-items:center;justify-content:center}
+.pill-check svg{width:12px;height:12px;stroke:#fff;stroke-width:2.5}
+.pill-check.show{display:flex}
+.pill-info{flex:1}
+.pill-title{font-size:14px;font-weight:600;color:var(--text-primary)}
+.pill-sub{font-size:12px;color:var(--text-secondary);margin-top:2px}
+.pill-action{padding:8px 16px;border-radius:20px;background:var(--gradient-main);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;white-space:nowrap}
+
+/* ========== DESIGN 3: Floating mini card ========== */
+.float-card{position:absolute;top:100px;right:16px;width:160px;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:16px;padding:14px;box-shadow:0 8px 32px rgba(0,0,0,0.1);border:1px solid rgba(212,149,106,0.1);z-index:20}
+.float-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.float-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.float-dot.done{background:#4CAF50;animation:none}
+.float-title{font-size:12px;font-weight:600;color:var(--text-primary)}
+.float-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.float-bar{height:100%;background:var(--gradient-main);border-radius:2px;width:65%;transition:width 0.3s}
+.float-bar.done{width:100%;background:#4CAF50}
+.float-status{font-size:11px;color:var(--text-secondary)}
+.float-btn{display:none;margin-top:8px;padding:6px 12px;border-radius:12px;background:var(--gradient-main);color:#fff;font-size:11px;font-weight:600;text-align:center;cursor:pointer}
+.float-btn.show{display:block}
+
+.section-label{font-size:12px;color:var(--text-hint);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<!-- ====== DESIGN 1: FAB + 气泡提示 ====== -->
+<div>
+  <h2>方案一：FAB + 气泡提示</h2>
+  <p class="desc">一键搭配按钮放在右下角FAB，生成中/完成后弹出气泡提示，点击气泡查看详情</p>
+  <div class="phone">
+    <div class="nav">我的衣柜</div>
+    <div class="content">
+      <div class="w-title">我的衣柜</div>
+      <div class="w-sub">共 6 件衣服</div>
+      <div class="tabs">
+        <div class="tab-pill active">全部 6</div>
+        <div class="tab-pill">上衣 3</div>
+        <div class="tab-pill">下装 2</div>
+        <div class="tab-pill">连衣裙 1</div>
+      </div>
+      <div class="grid">
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">运动鞋</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">半袖</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">短裤</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">短裤</span></div></div>
+      </div>
+    </div>
+    <!-- FAB - 点击触发一键搭配 -->
+    <div class="fab" title="一键搭配">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z" stroke-width="1.8"/></svg>
+    </div>
+    <!-- 气泡提示 - 生成中 -->
+    <div class="tooltip-bubble">
+      <div class="tooltip-icon generating"><div class="spinner"></div></div>
+      <div><div class="tooltip-text">AI 正在生成搭配...</div><div class="tooltip-sub">预计需要 8 秒</div></div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="1.8"/></svg><span>首页</span></div>
+      <div class="tab-item active"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1.8"/></svg><span>衣柜</span></div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z" stroke-width="1.8"/></svg><span>穿搭</span></div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke-width="1.8"/></svg><span>我的</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DESIGN 2: 底部进度条 ====== -->
+<div>
+  <h2>方案二：底部进度条浮窗</h2>
+  <p class="desc">一键搭配触发后，底部弹出圆角进度条浮窗，显示生成进度和状态，完成后可点击查看</p>
+  <div class="phone">
+    <div class="nav">我的衣柜</div>
+    <div class="content">
+      <div class="w-title">我的衣柜</div>
+      <div class="w-sub">共 6 件衣服</div>
+      <div class="tabs">
+        <div class="tab-pill active">全部 6</div>
+        <div class="tab-pill">上衣 3</div>
+        <div class="tab-pill">下装 2</div>
+        <div class="tab-pill">连衣裙 1</div>
+      </div>
+      <div class="grid">
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">运动鞋</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">半袖</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">短裤</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">短裤</span></div></div>
+      </div>
+    </div>
+    <!-- 底部进度条浮窗 -->
+    <div class="bottom-pill">
+      <div class="pill-progress">
+        <svg viewBox="0 0 40 40"><circle class="pill-bg" cx="20" cy="20" r="18"/><circle class="pill-fill" cx="20" cy="20" r="18"/></svg>
+        <div class="pill-check"><svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg></div>
+      </div>
+      <div class="pill-info">
+        <div class="pill-title">AI 搭配生成中</div>
+        <div class="pill-sub">正在分析你的衣柜...</div>
+      </div>
+      <div class="pill-action">取消</div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="1.8"/></svg><span>首页</span></div>
+      <div class="tab-item active"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1.8"/></svg><span>衣柜</span></div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z" stroke-width="1.8"/></svg><span>穿搭</span></div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke-width="1.8"/></svg><span>我的</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DESIGN 3: 右上角迷你卡片 ====== -->
+<div>
+  <h2>方案三：右上角迷你浮窗</h2>
+  <p class="desc">生成中在右上角显示迷你进度卡片，轻量不遮挡内容，完成后变为"查看"按钮</p>
+  <div class="phone">
+    <div class="nav">我的衣柜</div>
+    <div class="content">
+      <div class="w-title">我的衣柜</div>
+      <div class="w-sub">共 6 件衣服</div>
+      <div class="tabs">
+        <div class="tab-pill active">全部 6</div>
+        <div class="tab-pill">上衣 3</div>
+        <div class="tab-pill">下装 2</div>
+        <div class="tab-pill">连衣裙 1</div>
+      </div>
+      <div class="grid">
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">运动鞋</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">半袖</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">短裤</span></div></div>
+        <div class="grid-item"><div class="grid-img"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1"/></svg></div><div class="grid-tags"><span class="tag">短裤</span></div></div>
+      </div>
+    </div>
+    <!-- 迷你浮窗 -->
+    <div class="float-card">
+      <div class="float-header">
+        <div class="float-dot"></div>
+        <div class="float-title">AI 搭配生成中</div>
+      </div>
+      <div class="float-progress"><div class="float-bar"></div></div>
+      <div class="float-status">正在分析衣柜风格...</div>
+    </div>
+    <!-- FAB -->
+    <div class="fab">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z" stroke-width="1.8"/></svg>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-width="1.8"/></svg><span>首页</span></div>
+      <div class="tab-item active"><svg viewBox="0 0 24 24" fill="none"><path d="M20.38 3.46L16 2 12 5.5 8 2l-4.38 1.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" stroke-width="1.8"/></svg><span>衣柜</span></div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z" stroke-width="1.8"/></svg><span>穿搭</span></div>
+      <div class="tab-item"><svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-width="1.8"/><circle cx="12" cy="7" r="4" stroke-width="1.8"/></svg><span>我的</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

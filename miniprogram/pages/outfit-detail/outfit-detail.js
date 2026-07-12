@@ -1,15 +1,17 @@
-﻿// pages/outfit-detail/outfit-detail.js
+// pages/outfit-detail/outfit-detail.js
 const { getThemeClass } = require('../../utils/theme')
 const api = require('../../utils/api')
 const db = wx.cloud.database()
 
 Page({
-  data: { themeClass: '', outfit: {}, displayItems: [], outfitId: '' },
+  data: { themeClass: '', outfit: {}, displayItems: [], outfitId: '', loading: true },
   onLoad(opts) {
-    this.setData({ themeClass: getThemeClass(), outfitId: opts.id })
+    const sysInfo = wx.getSystemInfoSync()
+    this.setData({ themeClass: getThemeClass(), outfitId: opts.id, statusBarHeight: sysInfo.statusBarHeight || 0 })
     this.loadOutfit(opts.id)
   },
   async loadOutfit(id) {
+    wx.showLoading({ title: '加载中...' })
     const res = await db.collection('outfits').doc(id).get()
     const outfit = res.data
     const items = []
@@ -24,7 +26,9 @@ Page({
         } catch (e) {}
       }
     }
-    this.setData({ outfit, displayItems: items })
+    outfit.scoreText = outfit.score ? (outfit.score * 100).toFixed(0) + '%' : ''
+    this.setData({ outfit, displayItems: items, loading: false })
+    wx.hideLoading()
   },
   previewImage() { wx.previewImage({ urls: [this.data.outfit.composition_url] }) },
   async acceptOutfit() {
@@ -34,5 +38,13 @@ Page({
       this.setData({ 'outfit.status': 'accepted' })
     } catch (e) { wx.showToast({ title: '操作失败', icon: 'none' }) }
   },
-  rejectOutfit() { wx.navigateBack() }
+  rejectOutfit() { wx.navigateBack() },
+  goBack() { wx.navigateBack() },
+  onShareAppMessage() {
+    return { title: this.data.outfit.name || 'AI穿搭推荐', path: '/pages/outfit-detail/outfit-detail?id=' + this.data.outfitId }
+  }
 })
+
+
+
+

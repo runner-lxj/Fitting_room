@@ -430,11 +430,8 @@
 
 /* 定位刷新按钮 */
 .loc-refresh {
-  font-size: 22rpx;
+  font-size: 28rpx;
   color: var(--primary);
-  margin-left: 12rpx;
-  padding: 4rpx 16rpx;
-  border: 1rpx solid var(--primary-light);
-  border-radius: 999rpx;
-  background: rgba(212,149,106,0.06);
+  margin-left: 8rpx;
+  line-height: 1;
 }

@@ -7,7 +7,7 @@
         <view class="home-location" bindtap="refreshLocation">
           <text class="loc-emoji">📍</text>
           <text>{{locationName}}</text>
-          <text class="loc-refresh">刷新</text>
+          <text class="loc-refresh">↻</text>
         </view>
       </view>
       <view class="digital-avatar">

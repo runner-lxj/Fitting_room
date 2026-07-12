@@ -55,7 +55,7 @@
             <image class="outfit-cloth-img" src="{{item}}" mode="aspectFill"></image>
           </view>
           <view class="outfit-cloth-item outfit-cloth-empty" wx:if="{{!outfits[0].clothImages || outfits[0].clothImages.length === 0}}">
-            <text class="svg-placeholder">•</text>
+            <view class="icon-hanger"></view>
           </view>
         </view>
         <view class="outfit-info">
@@ -70,7 +70,7 @@
     </view>
     <view class="empty-state" wx:if="{{!loading && outfits.length === 0}}">
       <view class="empty-icon-box">
-        <text class="svg-placeholder">•</text>
+        <view class="icon-empty-box"></view>
       </view>
       <text class="empty-text">还没有搭配方案</text>
       <text class="empty-sub">去衣柜添加衣服，然后一键搭配</text>

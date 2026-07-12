@@ -45,7 +45,7 @@
     <view class="menu-item">
       <view class="icon-menu-dot"></view>
       <text class="menu-text">关于穿搭助手</text>
-      <text class="menu-value">v0.2</text>
+      <text class="menu-value">V1.0</text>
       <view class="icon-chevron"></view>
     </view>
   </view>

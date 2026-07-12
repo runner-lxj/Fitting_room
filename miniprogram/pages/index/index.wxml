@@ -4,9 +4,10 @@
       <view>
         <text class="home-greeting" style="font-family: ZCOOLKuaiLe">{{greeting}}{{userName ? "，" + userName : ""}}</text>
         <text class="home-greeting-sub">{{outfitSuggestion}}</text>
-        <view class="home-location">
+        <view class="home-location" bindtap="refreshLocation">
           <text class="loc-emoji">📍</text>
           <text>{{locationName}}</text>
+          <text class="loc-refresh">刷新</text>
         </view>
         </view>
       </view>

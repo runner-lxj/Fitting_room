@@ -71,6 +71,33 @@ Page({
           // 未授权，使用默认北京
           this.setData({ locationId: '101010100', locationName: '北京' })
           this.loadData()
+
+  refreshLocation() {
+    wx.removeStorageSync('userLocation')
+    this.setData({ locationId: '101010100', locationName: '定位中...' })
+    wx.authorize({
+      scope: 'scope.userLocation',
+      success: () => { this.getLocation() },
+      fail: () => {
+        wx.showModal({
+          title: '位置授权',
+          content: '需要位置权限来获取当地天气，是否前往设置开启？',
+          confirmText: '去设置',
+          cancelText: '暂不',
+          success: (res) => {
+            if (res.confirm) {
+              wx.openSetting({ success: (r) => {
+                if (r.authSetting['scope.userLocation']) this.getLocation()
+                else this.setData({ locationName: '北京' })
+              }})
+            } else {
+              this.setData({ locationName: '北京' })
+            }
+          }
+        })
+      }
+    })
+  },
         }
       })
     }

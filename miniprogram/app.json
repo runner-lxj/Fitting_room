@@ -48,7 +48,7 @@
       }
     ]
   },
-  "cloud": true,
+  "cloud": true, "usePrivacyCheck": true,
   "sitemapLocation": "sitemap.json",
   "permission": {
     "scope.userLocation": {

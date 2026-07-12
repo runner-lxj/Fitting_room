@@ -1,69 +1,31 @@
 <view class="page">
-  <!-- 微信官方隐私弹窗（SDK触发） -->
-  <privacy-popup wx:if="{{needPrivacy}}">
-    <view class="privacy-dialog">
-      <view class="dialog-header">
-        <text class="dialog-title">隐私协议</text>
-      </view>
-      <scroll-view scroll-y class="dialog-content">
-        <view class="section">
-          <text class="section-title">一、信息收集</text>
-          <text class="text">本小程序收集以下信息：</text>
-          <text class="text">1. 微信用户头像和昵称（用于个性化展示）</text>
-          <text class="text">2. 衣物照片（用于AI识别和搭配推荐）</text>
-          <text class="text">3. 设备位置信息（用于获取天气数据）</text>
-        </view>
-        <view class="section">
-          <text class="section-title">二、信息使用</text>
-          <text class="text">收集的信息仅用于：提供穿搭推荐服务、改善用户体验。</text>
-          <text class="text">不会向第三方出售或共享您的个人信息。</text>
-        </view>
-        <view class="section">
-          <text class="section-title">三、数据存储</text>
-          <text class="text">您的数据存储在微信云开发服务器中，我们会采取合理措施保护您的数据安全。</text>
-        </view>
-        <view class="section">
-          <text class="section-title">四、联系我们</text>
-          <text class="text">如有任何问题，请通过小程序内反馈功能联系我们。</text>
-        </view>
-      </scroll-view>
-      <view class="dialog-footer">
-        <button class="btn-accept" bindtap="onAcceptPrivacy">同意并继续</button>
-        <button class="btn-reject" bindtap="onRejectPrivacy">不同意</button>
-      </view>
+  <view class="header">
+    <text class="title">隐私协议</text>
+  </view>
+  <scroll-view scroll-y class="content">
+    <view class="section">
+      <text class="section-title">一、信息收集</text>
+      <text class="text">本小程序收集以下信息：</text>
+      <text class="text">1. 微信用户头像和昵称（用于个性化展示）</text>
+      <text class="text">2. 衣物照片（用于AI识别和搭配推荐）</text>
+      <text class="text">3. 设备位置信息（用于获取天气数据）</text>
     </view>
-  </privacy-popup>
-
-  <!-- 首次进入时的手动同意页面 -->
-  <view wx:if="{{!needPrivacy}}">
-    <view class="header">
-      <text class="title">隐私协议</text>
+    <view class="section">
+      <text class="section-title">二、信息使用</text>
+      <text class="text">收集的信息仅用于：提供穿搭推荐服务、改善用户体验。</text>
+      <text class="text">不会向第三方出售或共享您的个人信息。</text>
     </view>
-    <scroll-view scroll-y class="content">
-      <view class="section">
-        <text class="section-title">一、信息收集</text>
-        <text class="text">本小程序收集以下信息：</text>
-        <text class="text">1. 微信用户头像和昵称（用于个性化展示）</text>
-        <text class="text">2. 衣物照片（用于AI识别和搭配推荐）</text>
-        <text class="text">3. 设备位置信息（用于获取天气数据）</text>
-      </view>
-      <view class="section">
-        <text class="section-title">二、信息使用</text>
-        <text class="text">收集的信息仅用于：提供穿搭推荐服务、改善用户体验。</text>
-        <text class="text">不会向第三方出售或共享您的个人信息。</text>
-      </view>
-      <view class="section">
-        <text class="section-title">三、数据存储</text>
-        <text class="text">您的数据存储在微信云开发服务器中，我们会采取合理措施保护您的数据安全。</text>
-      </view>
-      <view class="section">
-        <text class="section-title">四、联系我们</text>
-        <text class="text">如有任何问题，请通过小程序内反馈功能联系我们。</text>
-      </view>
-    </scroll-view>
-    <view class="footer">
-      <button class="btn-accept" bindtap="accept">同意并继续</button>
-      <button class="btn-reject" bindtap="reject">不同意</button>
+    <view class="section">
+      <text class="section-title">三、数据存储</text>
+      <text class="text">您的数据存储在微信云开发服务器中，我们会采取合理措施保护您的数据安全。</text>
     </view>
+    <view class="section">
+      <text class="section-title">四、联系我们</text>
+      <text class="text">如有任何问题，请通过小程序内反馈功能联系我们。</text>
+    </view>
+  </scroll-view>
+  <view class="footer">
+    <button class="btn-accept" open-type="agreePrivacyAuthorization" bindagreeprivacyauthorization="onAcceptPrivacy">同意并继续</button>
+    <button class="btn-reject" bindtap="onRejectPrivacy">不同意</button>
   </view>
 </view>

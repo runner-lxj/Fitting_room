@@ -57,6 +57,16 @@ exports.main = async (event, context) => {
 
     try {
       const fileRes = await cloud.downloadFile({ fileID: imageFileID })
+      // 内容安全审核
+      try {
+        const checkRes = await cloud.openapi.security.imgSecCheck({ media: { contentType: imageFileID.endsWith('.png') ? 'image/png' : 'image/jpeg', value: fileRes.fileContent } })
+        if (checkRes.errCode !== 0) {
+          console.warn('[clothes-add] imgSecCheck blocked:', checkRes.errMsg)
+          return { error: '图片内容违规，无法上传' }
+        }
+      } catch (secErr) {
+        console.warn('[clothes-add] imgSecCheck error:', secErr.message)
+      }
       const base64 = fileRes.fileContent.toString('base64')
       console.log('[recognize] image size:', base64.length, 'bytes, mimeType:', mimeType)
       const mimeType = imageFileID.endsWith('.png') ? 'image/png' : 'image/jpeg'

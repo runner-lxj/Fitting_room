@@ -9,7 +9,6 @@
           <text>{{locationName}}</text>
           <text class="loc-refresh">刷新</text>
         </view>
-        </view>
       </view>
       <view class="digital-avatar">
         <image class="digital-avatar-img" src="/static/images/avatar-character.png" mode="aspectFit"></image>

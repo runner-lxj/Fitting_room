@@ -97,7 +97,7 @@
   border-color: var(--primary);
 }
 
-/* 衣服网格 - 对齐设计稿 */
+/* 衣服网格 */
 .clothes-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -155,7 +155,7 @@
   color: var(--text-hint);
 }
 
-/* 标签区 - 设计稿: padding:10px 12px */
+/* 标签区 */
 .clothes-tags {
   padding: 20rpx 24rpx;
   display: flex;
@@ -164,16 +164,7 @@
   align-items: center;
 }
 
-.color-dot {
-  width: 28rpx;
-  height: 28rpx;
-  border-radius: 50%;
-  border: 3rpx solid rgba(0,0,0,0.06);
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-/* 悬浮按钮 - 设计稿 */
+/* 悬浮添加按钮 */
 .fab-btn {
   position: fixed;
   right: 40rpx;
@@ -219,21 +210,6 @@
   50% { opacity: 0.4; }
 }
 
-
-/* 一键搭配按钮 */
-.btn-generate {
-  background: var(--gradient-main);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-full);
-  padding: 16rpx 48rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  margin: 16rpx 0;
-  box-shadow: 0 4rpx 16rpx rgba(212,149,106,0.3);
-}
-.btn-generate::after { border: none; }
-
 /* 搭配计数角标 */
 .match-badge {
   position: absolute;
@@ -256,22 +232,3 @@
 .match-badge.count-2 {
   background: rgba(194,132,122,0.85);
 }
-
-.btn-reset { background: var(--bg-input); color: var(--text-secondary); border: 1rpx solid var(--border); border-radius: var(--radius-full); padding: 12rpx 32rpx; font-size: 24rpx; margin: 8rpx 0; }
-.btn-reset::after { border: none; }
-
-/* 按钮行 */
-.btn-row {
-  display: flex;
-  gap: 16rpx;
-  margin: 16rpx 0;
-}
-.btn-row .btn-generate {
-  flex: 2;
-  margin: 0;
-}
-.btn-row .btn-reset {
-  flex: 1;
-  margin: 0;
-}
-

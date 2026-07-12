@@ -60,7 +60,11 @@
         </view>
         <view class="outfit-info">
           <text class="outfit-name">{{outfits[0].name}}</text>
-          <text class="outfit-occasion">{{outfits[0].occasion}}</text>
+          <text class="outfit-occasion">{{outfits[0].occasion}} · {{outfits[0].season}}</text>
+          <view class="outfit-tags">
+            <text class="outfit-tag tag-weather" wx:for="{{outfits[0].weather_tags}}" wx:key="*this">{{item}}</text>
+            <text class="outfit-tag tag-style" wx:if="{{outfits[0].style_summary}}">{{outfits[0].style_summary}}</text>
+          </view>
         </view>
       </view>
     </view>

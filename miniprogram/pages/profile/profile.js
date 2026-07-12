@@ -29,7 +29,7 @@ Page({
   async loadData() {
     try {
       const clothes = await db.collection('clothes').where({ user_id: '{openid}' }).count()
-      const outfits = await db.collection('wardrobe_photos').where({ user_id: '{openid}' }).count()
+      const outfits = await db.collection('outfits').where({ _openid: '{openid}', status: 'accepted' }).count()
       this.setData({ clothesCount: clothes.total, outfitCount: outfits.total })
     } catch (e) {
       console.error(e)
@@ -40,7 +40,7 @@ Page({
     wx.showModal({
       title: '修改昵称',
       editable: true,
-      placeholderText: '请输入新昵称',
+      placeholderText: '请输入新昵称（最多5个字）', maxLength: 5,
       success: async (res) => {
         if (res.confirm && res.content && res.content.trim()) {
           const nickName = res.content.trim()

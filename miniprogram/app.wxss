@@ -256,3 +256,141 @@ page {
 .animate-in {
   animation: fadeInUp 0.4s ease forwards;
 }
+
+/* ========== CSS 图标系统 ========== */
+/* 右箭头 chevron */
+.icon-chevron {
+  width: 16rpx;
+  height: 16rpx;
+  border-top: 3rpx solid var(--text-hint);
+  border-right: 3rpx solid var(--text-hint);
+  transform: rotate(45deg);
+}
+/* 关闭 × */
+.icon-close {
+  width: 24rpx;
+  height: 24rpx;
+  position: relative;
+}
+.icon-close::before, .icon-close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 3rpx;
+  background: var(--text-hint);
+  border-radius: 2rpx;
+}
+.icon-close::before { transform: rotate(45deg); }
+.icon-close::after { transform: rotate(-45deg); }
+.icon-close.small { width: 18rpx; height: 18rpx; }
+/* 加号 + */
+.icon-add {
+  width: 32rpx;
+  height: 32rpx;
+  position: relative;
+}
+.icon-add::before, .icon-add::after {
+  content: '';
+  position: absolute;
+  background: var(--text-hint);
+  border-radius: 2rpx;
+}
+.icon-add::before { top: 50%; left: 15%; width: 70%; height: 3rpx; transform: translateY(-50%); }
+.icon-add::after { left: 50%; top: 15%; width: 3rpx; height: 70%; transform: translateX(-50%); }
+/* 衣架/衣服 */
+.icon-hanger {
+  width: 48rpx;
+  height: 48rpx;
+  position: relative;
+  opacity: 0.3;
+}
+.icon-hanger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16rpx;
+  height: 16rpx;
+  border: 3rpx solid var(--text-hint);
+  border-radius: 50%;
+}
+.icon-hanger::after {
+  content: '';
+  position: absolute;
+  top: 14rpx;
+  left: 10%;
+  width: 80%;
+  height: 3rpx;
+  background: var(--text-hint);
+}
+/* 空盒子 */
+.icon-empty-box {
+  width: 56rpx;
+  height: 48rpx;
+  border: 3rpx solid var(--text-hint);
+  border-radius: 8rpx;
+  opacity: 0.4;
+  position: relative;
+}
+.icon-empty-box::after {
+  content: '';
+  position: absolute;
+  top: -10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24rpx;
+  height: 10rpx;
+  border: 3rpx solid var(--text-hint);
+  border-bottom: none;
+  border-radius: 8rpx 8rpx 0 0;
+}
+/* 用户头像占位 */
+.icon-user {
+  width: 48rpx;
+  height: 48rpx;
+  position: relative;
+  opacity: 0.4;
+}
+.icon-user::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20rpx;
+  height: 20rpx;
+  border: 3rpx solid var(--text-hint);
+  border-radius: 50%;
+}
+.icon-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 18rpx;
+  border: 3rpx solid var(--text-hint);
+  border-bottom: none;
+  border-radius: 20rpx 20rpx 0 0;
+}
+/* 菜单左图标（小圆点风格） */
+.icon-menu-dot {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: rgba(212,149,106,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-menu-dot::after {
+  content: '';
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: var(--primary-light);
+}

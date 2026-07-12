@@ -1,13 +1,24 @@
-<view class="page {{themeClass}}">  <!-- 状态栏占位 -->  <view style="height: {{statusBarHeight}}px;"></view>
+<view class="page {{themeClass}}">
+  <!-- 顶部导航栏（自定义） -->
+  <view class="top-bar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="top-bar-inner">
+      <view class="detail-back" bindtap="goBack">
+        <view class="back-arrow"></view>
+      </view>
+      <!-- 右侧留空给微信胶囊按钮 -->
+    </view>
+  </view>
+
   <!-- 大图 Hero 区 -->
   <view class="detail-hero">
-    <view class="detail-back" bindtap="goBack">
-      <text class="svg-placeholder">•</text>
+    <view class="hero-grid" wx:if="{{outfit.clothImages.length > 0}}">
+      <image class="hero-grid-img" wx:for="{{outfit.clothImages}}" wx:key="*this" src="{{item}}" mode="aspectFill"></image>
     </view>
-    <image class="hero-img" wx:if="{{outfit.composition_url}}" src="{{outfit.composition_url}}" mode="aspectFit" bindtap="previewImage"></image>
-    <text class="svg-placeholder">•</text>
-    <view class="detail-hero-badge" wx:if="{{outfit.score}}">
-      <text class="svg-placeholder">•</text>
+    <view class="hero-grid hero-grid-1" wx:else>
+      <view class="icon-hanger"></view>
+    </view>
+    <!-- 匹配度徽章：叠在图片右下角 -->
+    <view class="hero-badge" wx:if="{{outfit.scoreText}}">
       匹配 {{outfit.scoreText}}
     </view>
   </view>
@@ -16,8 +27,7 @@
     <!-- AI 搭配理由 -->
     <view class="card ai-reason-card" wx:if="{{outfit.ai_reason}}">
       <view class="ai-reason-header">
-        <text class="info-emoji">ℹ️</text>
-        <text class="ai-reason-title">AI 搭配理由</text>
+        <text class="ai-reason-title">ℹ️ AI 搭配理由</text>
       </view>
       <text class="ai-reason-text">{{outfit.ai_reason}}</text>
     </view>
@@ -27,11 +37,11 @@
       <view class="detail-header">
         <text class="detail-name">{{outfit.name}}</text>
         <view class="detail-meta">
-          <text class="tag tag-accent" wx:if="{{outfit.weather_context}}">{{outfit.weather_context}}</text>
+          <text class="tag tag-accent" wx:if="{{outfit.weather_desc}}">{{outfit.weather_desc}}</text>
           <text class="tag tag-accent" wx:if="{{outfit.occasion}}">{{outfit.occasion}}</text>
         </view>
       </view>
-      <text class="detail-desc">{{outfit.description}}</text>
+      <text class="detail-desc" wx:if="{{outfit.style_summary}}">风格：{{outfit.style_summary}}</text>
     </view>
 
     <!-- 搭配单品 -->
@@ -41,13 +51,12 @@
         <view class="item-row" wx:for="{{displayItems}}" wx:key="id">
           <view class="item-img">
             <image wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFit" class="item-img-inner"></image>
-            <text class="svg-placeholder">•</text>
+            <view class="icon-hanger" wx:else></view>
           </view>
           <view class="item-info">
             <text class="item-name">{{item.name}}</text>
             <text class="item-cat">{{item.categoryLabel}}</text>
           </view>
-          <text class="svg-placeholder">•</text>
         </view>
       </view>
     </view>
@@ -57,12 +66,10 @@
   <view class="action-bar safe-bottom" wx:if="{{outfit.status === 'pending'}}">
     <button class="btn-secondary" bindtap="rejectOutfit">舍弃</button>
     <button class="btn-primary" bindtap="acceptOutfit">
-      <text class="svg-placeholder">•</text>
-      采纳搭配
+      ✨ 采纳搭配
     </button>
   </view>
   <view class="action-bar safe-bottom" wx:else>
     <text class="accepted-text">已采纳</text>
   </view>
 </view>
-

@@ -1,4 +1,6 @@
-<view class="page {{themeClass}}">`n  <!-- 状态栏占位 -->`n  <view style="height: {{statusBarHeight}}px;"></view>
+<view class="page {{themeClass}}">
+  <!-- 状态栏占位 -->
+  <view style="height: {{statusBarHeight}}px;"></view>
   <!-- 标题区 -->
   <view class="gradient-header short">
     <text class="page-title">添加衣服</text>
@@ -28,7 +30,7 @@
 
       <!-- 删除按钮 -->
       <view class="upload-remove" catchtap="removeItem" data-index="{{index}}">
-        <text class="svg-placeholder">•</text>
+        <view class="icon-close small"></view>
       </view>
     </view>
   </view>
@@ -36,7 +38,7 @@
   <!-- 上传区域 -->
   <view class="upload-section" wx:if="{{uploadList.length < 9}}">
     <view class="upload-area" bindtap="chooseImage">
-      <text class="svg-placeholder">•</text>
+      <view class="icon-add"></view>
       <text class="upload-text">继续添加</text>
       <text class="upload-hint">还可以添加 {{9 - uploadList.length}} 张</text>
     </view>
@@ -48,7 +50,7 @@
       <view class="edit-header">
         <text class="edit-title">编辑识别结果</text>
         <view class="edit-close" bindtap="closeEdit">
-          <text class="svg-placeholder">•</text>
+          <view class="icon-close small"></view>
         </view>
       </view>
       
@@ -90,4 +92,3 @@
     <button class="btn-primary" bindtap="goBack">完成</button>
   </view>
 </view>
-

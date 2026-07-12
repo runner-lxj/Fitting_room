@@ -32,7 +32,7 @@ App({
       }
     }).catch(e => {
       console.error('auto login failed:', e)
-      const info = { nickName: '穿搭用户', avatarUrl: '' }
+      const info = { nickName: '穿搭用户', avatarUrl: '/static/images/avatar-default.png' }
       wx.setStorageSync('userInfo', info)
       this.globalData.userInfo = info
     })
@@ -56,8 +56,7 @@ App({
   globalData: {
     theme: 'default',
     userInfo: null,
-    themeMap: { 'default': '奶油白', 'blue': '雾霾蓝', 'lavender': '薰衣草' }
+    themeMap: { 'default': '奶油白', 'blue': '雾霾蓝', 'lavender': '薰衣草' },
+    outfitDirty: true, wardrobeDirty: true
   }
 })
-
-

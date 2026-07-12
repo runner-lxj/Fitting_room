@@ -34,7 +34,7 @@
       <view class="clothes-img-wrap">
         <image class="clothes-img" wx:if="{{item.cutout_url || item.original_url}}" src="{{item.cutout_url || item.original_url}}" mode="aspectFit"></image>
         <view class="clothes-img-placeholder" wx:else>
-          <text class="svg-placeholder">•</text>
+          <view class="icon-hanger"></view>
           <text>{{item.name || '衣服'}}</text>
         </view>
       </view>
@@ -51,7 +51,7 @@
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{!loading && filteredClothes.length === 0}}">
     <view class="empty-icon-box">
-      <text class="svg-placeholder">•</text>
+      <view class="icon-empty-box"></view>
     </view>
     <text class="empty-text">还没有衣服</text>
     <text class="empty-sub">拍照添加你的第一件衣服吧</text>
@@ -62,24 +62,4 @@
   <view class="fab-btn" bindtap="goAdd">
     <text class="fab-icon">+</text>
   </view>
-
-  <view class="fab-generate {{generating ? 'hide' : ''}}" bindtap="generateOutfits">
-    <text class="fab-generate-icon">✨</text>
-  </view>
-
-  <!-- AI 搭配浮窗（右上角迷你卡片） -->
-  <view class="float-card {{floatState}}" bindtap="onFloatTap">
-    <view class="float-header">
-      <view class="float-dot {{floatState === 'done' ? 'done' : ''}}"></view>
-      <text class="float-title">{{floatTitle}}</text>
-    </view>
-    <view class="float-progress" wx:if="{{floatState === 'generating'}}">
-      <view class="float-bar" style="width:{{floatPercent}}%"></view>
-    </view>
-    <text class="float-status">{{floatStatus}}</text>
-    <view class="float-btn {{floatState === 'done' ? 'show' : ''}}" wx:if="{{floatState === 'done'}}">
-      <text>查看方案</text>
-    </view>
-  </view>
 </view>
-

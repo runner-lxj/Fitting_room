@@ -158,6 +158,10 @@ Page({
     console.log('[index] loadData START')
     const fallbackWeather = { temp: '--', condition: '请配置云环境', wind: '', humidity: 0, icon: '', tip: '云函数未部署，天气数据暂不可用' }
     try {
+      const db = wx.cloud.database()
+      const clothesCount = await db.collection("clothes").where({ user_id: "{openid}" }).count()
+      const outfitCount = await db.collection("outfits").where({ _openid: "{openid}", status: "accepted" }).count()
+      this.setData({ clothesCount: clothesCount.total, outfitCount: outfitCount.total })
       const weatherRes = await api.getWeather(this.data.locationId).catch(() => null)
       if (weatherRes && weatherRes.temp !== '--') { this.setData({ weather: weatherRes }) }
       else { this.setData({ weather: fallbackWeather }) }
@@ -169,7 +173,7 @@ Page({
         const items = outfit.items || []
         const ids = items.map(i => i.id).filter(Boolean)
         if (ids.length > 0) {
-          const db = wx.cloud.database()
+
           const clothRes = await db.collection('clothes').where({ _id: db.command.in(ids) }).get()
           const clothMap = {}
           clothRes.data.forEach(c => { clothMap[c._id] = c })

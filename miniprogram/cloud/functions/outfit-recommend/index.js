@@ -118,7 +118,7 @@ async function generateOutfits(OPENID) {
   for (const o of (result.outfits || [])) {
     const items = (o.items || []).map(item => ({ id: item.id, role: item.role || 'top' }))
     const doc = {
-      user_id: OPENID, name: o.name || '穿搭方案', occasion: o.occasion || '日常',
+      user_id: OPENID, _openid: OPENID, name: o.name || '穿搭方案', occasion: o.occasion || '日常',
       weather_desc: o.weather_desc || '', temperature_range: o.temperature_range || { min: 15, max: 30 },
       weather_tags: o.weather_tags || [], season: o.season || '四季通用',
       score: o.score || 0.8, style_summary: o.style_summary || '',
@@ -132,5 +132,50 @@ async function generateOutfits(OPENID) {
   console.log('[generate] saved', savedOutfits.length)
   return { outfits: savedOutfits }
 }
+
+
+
+async function getDailyRecommend(OPENID) {
+  console.log('[daily] START, OPENID:', OPENID)
+  const weather = await fetchWeather(DEFAULT_LOCATION)
+  const temp = weather ? weather.temp : 22
+  const condition = weather ? weather.condition : '多云'
+  console.log('[daily] weather:', temp + 'C', condition)
+  const outfits = await db.collection('outfits').where({ _openid: OPENID, status: 'accepted' }).get()
+  console.log('[daily] accepted:', outfits.data.length)
+  if (outfits.data.length === 0) return { outfit: null, weather, message: '暂无已采纳的搭配方案' }
+  // 按温度匹配优先，无匹配则返回最高分
+  const scored = outfits.data.map(o => {
+    const tr = o.temperature_range || { min: 15, max: 30 }
+    const tempMatch = temp >= tr.min && temp <= tr.max ? 1 : 0
+    return { ...o, tempMatch }
+  })
+  scored.sort((a, b) => (b.tempMatch - a.tempMatch) || ((b.score || 0) - (a.score || 0)))
+  return { outfit: scored[0], weather }
+}
+
+exports.main = async (event, context) => {
+  const { OPENID } = cloud.getWXContext()
+  const { action } = event
+  if (action === 'getWeather') {
+    const weather = await fetchWeather(event.location || DEFAULT_LOCATION)
+    return weather || { temp: '--', condition: 'unknown', wind: '', humidity: 0, icon: '', tip: 'no data' }
+  }
+  if (action === 'generate') return await generateOutfits(OPENID)
+  if (action === 'daily') return await getDailyRecommend(OPENID)
+  if (action === 'reverseGeocode') {
+    const { lat, lng } = event
+    if (!lat || !lng) return { error: 'missing coordinates' }
+    try {
+      const jwt = generateJwt()
+      const data = await httpGet('https://geoapi.qweather.com/v2/city/lookup?location=' + lng + ',' + lat + '&number=1', { 'Authorization': 'Bearer ' + jwt })
+      const json = JSON.parse(data)
+      if (json.code === '200' && json.location && json.location[0]) return { id: json.location[0].id, name: json.location[0].name }
+      return { id: DEFAULT_LOCATION, name: '北京' }
+    } catch (e) { return { id: DEFAULT_LOCATION, name: '北京' } }
+  }
+  return { error: 'unknown action' }
+}
+
 
 

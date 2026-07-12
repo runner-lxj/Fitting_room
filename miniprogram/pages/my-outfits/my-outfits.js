@@ -1,6 +1,7 @@
 const { getThemeClass } = require('../../utils/theme')
 const api = require('../../utils/api')
 const db = wx.cloud.database()
+const app = getApp()
 
 Page({
   data: {
@@ -15,23 +16,45 @@ Page({
     pendingCount: 0,
     loading: true,
     generating: false,
-    // 浮窗状态
-    floatState: '',       // '' | 'generating' | 'done'
+    floatState: '',
     floatTitle: '',
     floatStatus: '',
     floatPercent: 0,
-    generatedCount: 0
+    generatedCount: 0,
+    // 批量采纳
+    batchMode: false,
+    selectedIds: {},
+    selectedCount: 0,
+    allSelected: false
   },
+
+  _firstShow: true,
 
   onLoad() { this.setData({ themeClass: getThemeClass() }) },
   onShow() {
     this.setData({ themeClass: getThemeClass() })
-    this.loadOutfits()
+    if (this._firstShow || app.globalData.outfitDirty) {
+      this._firstShow = false
+      app.globalData.outfitDirty = false
+      this.loadOutfits()
+    }
   },
 
   switchTab(e) {
+    this.exitBatchMode()
     this.setData({ currentTab: e.currentTarget.dataset.key })
     this.loadOutfits()
+  },
+
+  _dedup(outfits) {
+    const seen = {}
+    return outfits.filter(o => {
+      const ids = (o.items || []).map(i => i.id || i).filter(Boolean).sort().join(',')
+      if (!ids) return true
+      if (seen[ids]) return false
+      seen[ids] = true
+      return true
+    })
   },
 
   async loadOutfits() {
@@ -39,8 +62,10 @@ Page({
     try {
       const tab = this.data.currentTab
       const status = tab === 'pending' ? 'pending' : 'accepted'
-      const res = await db.collection('outfits').where({ user_id: '{openid}' }).where({ status: status }).limit(20).get()
+      const otherStatus = status === 'pending' ? 'accepted' : 'pending'
 
+      const res = await db.collection('outfits').where({ _openid: '{openid}', status: status })
+        .orderBy('created_at', 'desc').limit(20).get()
       const outfits = []
       for (const o of res.data) {
         const items = o.items || []
@@ -57,18 +82,24 @@ Page({
         }
         outfits.push({ ...o, clothImages })
       }
+      const deduped = this._dedup(outfits)
 
-      // Update tab counts
-      const pendingRes = await db.collection('outfits').where({ user_id: '{openid}' }).where({ status: 'pending' }).count()
-      const acceptedRes = await db.collection('outfits').where({ user_id: '{openid}' }).where({ status: 'accepted' }).count()
+      const otherRes = await db.collection('outfits').where({ _openid: '{openid}', status: otherStatus })
+        .limit(20).get()
+      const otherDeduped = this._dedup(otherRes.data)
+
+      const curCount = deduped.length
+      const otherCount = otherDeduped.length
+      const pendingCount = status === 'pending' ? curCount : otherCount
+      const acceptedCount = status === 'accepted' ? curCount : otherCount
 
       this.setData({
-        outfits,
-        totalCount: pendingRes.total + acceptedRes.total,
-        pendingCount: pendingRes.total,
+        outfits: deduped,
+        totalCount: curCount + otherCount,
+        pendingCount: pendingCount,
         loading: false,
-        'tabs[0].count': pendingRes.total,
-        'tabs[1].count': acceptedRes.total
+        'tabs[0].count': pendingCount,
+        'tabs[1].count': acceptedCount
       })
     } catch (e) {
       console.error('[my-outfits] load error:', e)
@@ -76,6 +107,70 @@ Page({
     }
   },
 
+  // ===== 批量采纳 =====
+  enterBatchMode() {
+    this.setData({ batchMode: true, selectedIds: {}, selectedCount: 0, allSelected: false })
+  },
+
+  exitBatchMode() {
+    this.setData({ batchMode: false, selectedIds: {}, selectedCount: 0, allSelected: false })
+  },
+
+  toggleSelect(e) {
+    const id = e.currentTarget.dataset.id
+    const selected = { ...this.data.selectedIds }
+    if (selected[id]) {
+      delete selected[id]
+    } else {
+      selected[id] = true
+    }
+    const count = Object.keys(selected).length
+    this.setData({
+      selectedIds: selected,
+      selectedCount: count,
+      allSelected: count === this.data.outfits.length
+    })
+  },
+
+  toggleSelectAll() {
+    if (this.data.allSelected) {
+      this.setData({ selectedIds: {}, selectedCount: 0, allSelected: false })
+    } else {
+      const selected = {}
+      this.data.outfits.forEach(o => { selected[o._id] = true })
+      this.setData({ selectedIds: selected, selectedCount: this.data.outfits.length, allSelected: true })
+    }
+  },
+
+  async batchAccept() {
+    const ids = Object.keys(this.data.selectedIds)
+    if (ids.length === 0) return
+    wx.showModal({
+      title: '批量采纳',
+      content: '确定采纳选中的 ' + ids.length + ' 套方案？',
+      success: async (res) => {
+        if (!res.confirm) return
+        wx.showLoading({ title: '采纳中 0/' + ids.length })
+        let done = 0
+        for (const id of ids) {
+          try {
+            await api.acceptOutfit(id)
+            done++
+            wx.showLoading({ title: '采纳中 ' + done + '/' + ids.length })
+          } catch (e) {
+            console.error('[batch] accept failed:', id, e)
+          }
+        }
+        wx.hideLoading()
+        wx.showToast({ title: '已采纳 ' + done + ' 套', icon: 'success' })
+        app.globalData.outfitDirty = true
+        this.exitBatchMode()
+        this.loadOutfits()
+      }
+    })
+  },
+
+  // ===== 一键搭配 =====
   async generateOutfits() {
     if (this.data.generating) return
     this.setData({
@@ -86,7 +181,6 @@ Page({
       floatPercent: 10
     })
 
-    // 模拟进度
     const progressTimer = setInterval(() => {
       const p = this.data.floatPercent
       if (p < 90) {
@@ -138,7 +232,6 @@ Page({
 
   onFloatTap() {
     if (this.data.floatState === 'done') {
-      // 点击浮窗：关闭浮窗，切到待采纳tab
       this.setData({ floatState: '', currentTab: 'pending' })
       this.loadOutfits()
     }
@@ -152,7 +245,3 @@ Page({
     return { title: '我的穿搭记录', path: '/pages/my-outfits/my-outfits' }
   }
 })
-
-
-
-

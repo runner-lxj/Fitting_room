@@ -4,23 +4,37 @@
     <view class="header-row">
       <view>
         <text class="wardrobe-title">我的穿搭</text>
-        <text class="wardrobe-sub">共 {{totalCount}} 套方案</text>
+        <text class="wardrobe-sub">共 {{tabs[0].count + tabs[1].count}} 套方案</text>
       </view>
       <view class="gen-btn-sm {{generating ? 'disabled' : ''}}" bindtap="generateOutfits">
         <view class="spinner" wx:if="{{generating}}"></view>
-        <text wx:else>✨</text>
-        <text>{{pendingCount > 0 ? '再来一批' : '一键搭配'}}</text>
+        <text wx:if="{{!generating}}">✨ 一键搭配</text>
+        <text wx:if="{{generating}}">生成中</text>
       </view>
     </view>
   </view>
 
   <!-- Tab 切换 -->
   <view class="tab-scroll">
-    <view class="tab-list">
-      <view class="wardrobe-tab {{currentTab === item.key ? 'active' : ''}}"
-            wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
-        <text>{{item.name}}</text>
-        <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+    <view class="tab-row">
+      <view class="tab-list">
+        <view class="wardrobe-tab {{currentTab === item.key ? 'active' : ''}}"
+              wx:for="{{tabs}}" wx:key="key" bindtap="switchTab" data-key="{{item.key}}">
+          <text>{{item.name}}</text>
+          <text class="tab-count" wx:if="{{item.count > 0}}">{{item.count}}</text>
+        </view>
+      </view>
+      <view class="batch-icon {{currentTab === 'pending' && outfits.length > 0 ? '' : 'hidden'}}"
+            bindtap="{{batchMode ? 'exitBatchMode' : 'enterBatchMode'}}">
+        <view class="batch-icon-inner {{batchMode ? 'active' : ''}}">
+          <view class="batch-checkmark" wx:if="{{batchMode}}"></view>
+          <view class="batch-grid" wx:else>
+            <view class="batch-dot"></view>
+            <view class="batch-dot"></view>
+            <view class="batch-dot"></view>
+            <view class="batch-dot"></view>
+          </view>
+        </view>
       </view>
     </view>
   </view>
@@ -34,21 +48,25 @@
 
   <!-- 搭配列表 -->
   <view class="outfit-list" wx:if="{{!loading && outfits.length > 0}}">
-    <view class="outfit-record" wx:for="{{outfits}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
-      <view class="record-img">
-        <image wx:if="{{item.composition_url}}" src="{{item.composition_url}}" mode="aspectFill" class="record-img-inner"></image>
-        <image wx:elif="{{item.clothImages.length > 0}}" src="{{item.clothImages[0]}}" mode="aspectFill" class="record-img-inner"></image>
-        <text class="svg-placeholder" wx:else>•</text>
+    <view class="outfit-record {{batchMode && selectedIds[item._id] ? 'selected' : ''}}"
+          wx:for="{{outfits}}" wx:key="_id"
+          bindtap="{{batchMode ? 'toggleSelect' : 'goDetail'}}"
+          data-id="{{item._id}}" data-index="{{index}}">
+      <view class="check-box" wx:if="{{batchMode}}">
+        <view class="check-inner {{selectedIds[item._id] ? 'checked' : ''}}"></view>
+      </view>
+      <view class="mini-grid {{item.clothImages.length <= 2 ? 'grid-2' : item.clothImages.length === 3 ? 'grid-3' : 'grid-4'}}">
+        <image class="mini-grid-img" wx:for="{{item.clothImages}}" wx:key="*this" wx:for-item="img" src="{{img}}" mode="aspectFill"></image>
       </view>
       <view class="record-info">
         <text class="record-name">{{item.name}}</text>
-        <text class="record-date">{{item.occasion}} · {{item.style_summary}}</text>
+        <text class="record-date">{{item.occasion}} · {{item.season}}</text>
         <view class="record-tags" wx:if="{{item.weather_tags.length > 0}}">
           <text class="tag tag-accent" wx:for="{{item.weather_tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
         </view>
       </view>
-      <view class="record-arrow">
-        <text class="svg-placeholder">›</text>
+      <view class="record-arrow" wx:if="{{!batchMode}}">
+        <view class="icon-chevron"></view>
       </view>
     </view>
   </view>
@@ -56,18 +74,33 @@
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{!loading && outfits.length === 0}}">
     <view class="empty-icon-box">
-      <text class="svg-placeholder">👗</text>
+      <view class="icon-empty-box"></view>
     </view>
-    <text class="empty-text" wx:if="{{currentTab === 'pending'}}">还没有搭配方案</text>
-    <text class="empty-sub" wx:if="{{currentTab === 'pending'}}">点击右上角按钮，AI 帮你搭配</text>
+    <text class="empty-text" wx:if="{{currentTab === 'pending'}}">暂无待采纳方案</text>
+    <text class="empty-sub" wx:if="{{currentTab === 'pending'}}">在衣柜中点击「一键搭配」生成方案吧</text>
     <text class="empty-text" wx:if="{{currentTab === 'accepted'}}">暂无已采纳方案</text>
     <text class="empty-sub" wx:if="{{currentTab === 'accepted'}}">在待采纳中选择喜欢的方案点击采纳</text>
+    <button class="btn-primary empty-btn" bindtap="goHome" wx:if="{{currentTab === 'pending'}}">去衣柜</button>
+  </view>
+
+  <!-- 批量采纳底栏 -->
+  <view class="batch-bar" wx:if="{{batchMode}}">
+    <view class="batch-bar-inner">
+      <view class="batch-select-all" bindtap="toggleSelectAll">
+        <view class="check-box"><view class="check-inner {{allSelected ? 'checked' : ''}}"></view></view>
+        <text>全选</text>
+      </view>
+      <view class="batch-actions">
+        <button class="batch-btn-cancel" bindtap="exitBatchMode">取消</button>
+        <button class="batch-btn-confirm" bindtap="batchAccept">采纳 ({{selectedCount}})</button>
+      </view>
+    </view>
   </view>
 
   <!-- AI 搭配浮窗 -->
   <view class="float-card {{floatState}}" bindtap="onFloatTap">
     <view class="float-header">
-      <view class="float-dot {{floatState === 'done' ? 'done' : 'pulse'}}"></view>
+      <view class="float-dot {{floatState === 'generating' ? 'pulse' : ''}} {{floatState === 'done' ? 'done' : ''}}"></view>
       <text class="float-title">{{floatTitle}}</text>
     </view>
     <view class="float-progress" wx:if="{{floatState === 'generating'}}">

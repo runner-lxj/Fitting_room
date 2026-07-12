@@ -1,7 +1,7 @@
 // pages/wardrobe/wardrobe.js
 const { getThemeClass } = require('../../utils/theme')
-const api = require('../../utils/api')
 const db = wx.cloud.database()
+const app = getApp()
 
 Page({
   data: {
@@ -24,10 +24,16 @@ Page({
     loading: true
   },
 
+  _firstShow: true,
+
   onLoad() { this.setData({ themeClass: getThemeClass() }) },
   onShow() {
     this.setData({ themeClass: getThemeClass() })
-    this.loadClothes()
+    if (this._firstShow || app.globalData.wardrobeDirty) {
+      this._firstShow = false
+      app.globalData.wardrobeDirty = false
+      this.loadClothes()
+    }
   },
 
   async loadClothes() {
@@ -38,7 +44,6 @@ Page({
         ...t,
         count: t.key === 'all' ? clothes.length : clothes.filter(c => c.category === t.key).length
       }))
-      // 颜色名到色值的映射
       const colorMap = {
         '白': '#F5F5F0', '黑': '#2C2C2C', '灰': '#B0B0B0', '红': '#E85D6A',
         '蓝': '#4A6FA5', '深蓝': '#2C4A7C', '浅蓝': '#87CEEB', '牛仔蓝': '#6B8DB2',
@@ -80,58 +85,6 @@ Page({
     this.setData({ filteredClothes: list })
   },
 
-  async resetMatchCount() {
-    wx.showLoading({ title: '重置中...' })
-    try {
-      await wx.cloud.callFunction({ name: 'outfit-recommend', data: { action: 'resetMatchCount' } })
-      wx.hideLoading()
-      wx.showToast({ title: '重置完成', icon: 'success' })
-      this.loadClothes()
-    } catch (e) {
-      wx.hideLoading()
-      console.error('[wardrobe] reset failed:', e)
-      wx.showToast({ title: '重置失败', icon: 'none' })
-    }
-  },
-
-  async generateOutfits() {
-    this.setData({ generating: true })
-    wx.showLoading({ title: '分析衣柜中...' })
-    try {
-      // Step 1: Check how many clothes need matching
-      const db = wx.cloud.database()
-      const clothes = await db.collection('clothes').where({ user_id: '{openid}', status: 'recognized' }).get()
-      const needMatch = clothes.data.filter(c => {
-        if (c.category === 'shoes' || c.category === 'accessory') return false
-        return (c.match_count || 0) < 2
-      })
-      if (needMatch.length === 0) {
-        wx.hideLoading()
-        wx.showToast({ title: '所有衣服都已搭配2套以上', icon: 'none' })
-        this.setData({ generating: false })
-        return
-      }
-      wx.showLoading({ title: 'AI 生成搭配中...' })
-      // Step 2: Call cloud function
-      const result = await api.generateOutfits()
-      wx.hideLoading()
-      const outfits = result?.outfits || []
-      if (outfits.length > 0) {
-        wx.showToast({ title: '生成' + outfits.length + '套方案', icon: 'success' })
-        this.loadClothes()
-      } else {
-        const msg = result?.message || '暂无需要搭配的衣服'
-        wx.showToast({ title: msg, icon: 'none' })
-      }
-    } catch (e) {
-      wx.hideLoading()
-      console.error('[wardrobe] generate failed:', e)
-      wx.showToast({ title: '生成失败: ' + (e.message || ''), icon: 'none' })
-    } finally {
-      this.setData({ generating: false })
-    }
-  },
-
   async goAdd() {
     const res = await wx.chooseMedia({
       count: 9,
@@ -141,13 +94,10 @@ Page({
     const files = res.tempFiles
     if (files.length === 0) return
     let uploaded = 0
-    let recognized = 0
-    let failed = 0
     wx.showLoading({ title: '上传中 0/' + files.length })
     for (let i = 0; i < files.length; i++) {
       wx.showLoading({ title: '上传中 ' + (i + 1) + '/' + files.length })
       try {
-        // 压缩图片
         const compRes = await wx.compressImage({ src: files[i].tempFilePath, quality: 40 })
         const filePath = compRes.tempFilePath
         const ext = filePath.split('.').pop() || 'jpg'
@@ -162,6 +112,7 @@ Page({
           }
         })
         uploaded++
+        app.globalData.wardrobeDirty = true
         this.loadClothes()
         wx.cloud.callFunction({
           name: 'clothes-add',
@@ -176,28 +127,21 @@ Page({
                 color: info.color || '', material: info.material || '',
                 style_tags: info.style_tags || [], status: 'recognized'
               }
-            }).then(() => {
-              recognized++
-              this.loadClothes()
-            })
+            }).then(() => { this.loadClothes() })
           } else {
             db.collection('clothes').doc(dbRes._id).update({ data: { status: 'failed' } })
-            failed++
             this.loadClothes()
           }
         }).catch(() => {
           db.collection('clothes').doc(dbRes._id).update({ data: { status: 'failed' } })
-          failed++
           this.loadClothes()
         })
       } catch (e) {
         console.error('上传失败', e)
-        failed++
       }
     }
     wx.hideLoading()
     wx.showToast({ title: uploaded + '张上传成功', icon: 'success' })
-    this.loadClothes()
   },
   goDetail(e) { /* TODO: 衣服详情 */ },
   onLongPress(e) {
@@ -217,10 +161,10 @@ Page({
                   if (item.original_url) filesToDelete.push(item.original_url)
                   if (item.cutout_url) filesToDelete.push(item.cutout_url)
                   if (filesToDelete.length > 0) {
-                    const delRes = await wx.cloud.deleteFile({ fileList: filesToDelete })
-                    console.log('文件删除结果:', delRes)
+                    await wx.cloud.deleteFile({ fileList: filesToDelete })
                   }
                   await db.collection('clothes').doc(id).remove()
+                  app.globalData.wardrobeDirty = true
                   wx.showToast({ title: '已删除', icon: 'success' })
                   this.loadClothes()
                 } catch (err) {
@@ -236,14 +180,3 @@ Page({
   },
   onShareAppMessage() { return { title: '我的智能衣柜', path: '/pages/wardrobe/wardrobe' } }
 })
-
-
-
-
-
-
-
-
-
-
-

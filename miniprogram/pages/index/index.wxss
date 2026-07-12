@@ -359,7 +359,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 2rpx;
   width: 100%;
-  height: 340rpx;
+  aspect-ratio: 1;
   background: var(--bg-card);
 }
 .outfit-cloth-item {
@@ -382,4 +382,48 @@
 .action-emoji {
   font-size: 40rpx;
   line-height: 1;
+}
+
+/* 首页搭配标签 */
+.outfit-info {
+  padding: 20rpx 24rpx;
+}
+.outfit-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 8rpx;
+}
+.outfit-occasion {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 12rpx;
+}
+.outfit-tags {
+  display: flex;
+  gap: 10rpx;
+  flex-wrap: nowrap;
+}
+.outfit-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+.outfit-tag.tag-weather {
+  background: rgba(123,158,184,0.1);
+  color: #5A7F9A;
+}
+.outfit-tag.tag-season {
+  background: rgba(212,149,106,0.1);
+  color: var(--primary-dark);
+}
+.outfit-tag.tag-style {
+  background: rgba(160,141,176,0.1);
+  color: #7E6B90;
 }

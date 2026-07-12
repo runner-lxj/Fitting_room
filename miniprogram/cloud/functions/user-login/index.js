@@ -19,7 +19,7 @@ exports.main = async (event, context) => {
     let user = await db.collection('users').doc(OPENID).get().catch(() => null)
 
     if (!user || !user.data) {
-      const nickName = randomPick(PREFIXES) + randomPick(SUFFIXES)
+      const nickName = randomPick(PREFIXES.concat(SUFFIXES))
       await db.collection('users').add({
         data: {
           _id: OPENID,
@@ -36,6 +36,6 @@ exports.main = async (event, context) => {
     return { userInfo: user.data }
   } catch (e) {
     console.error('user-login error:', e)
-    return { userInfo: { _id: OPENID, nickName: randomPick(PREFIXES) + randomPick(SUFFIXES), avatarUrl: '', is_admin: false } }
+    return { userInfo: { _id: OPENID, nickName: randomPick(PREFIXES.concat(SUFFIXES)), avatarUrl: '', is_admin: false } }
   }
 }

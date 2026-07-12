@@ -161,29 +161,6 @@ Page({
     })
   },
 
-  requestLocationAuth() {
-    wx.authorize({ scope: 'scope.userLocation', success: () => {
-      this.setData({ locationAuthorized: true })
-      this.getLocation()
-    }, fail: () => {
-      wx.showModal({
-        title: '位置授权',
-        content: '需要获取您的位置来提供当地天气穿搭建议，是否前往设置开启？',
-        confirmText: '去设置',
-        cancelText: '暂不',
-        success: (res) => {
-          if (res.confirm) {
-            wx.openSetting({ success: (settingRes) => {
-              if (settingRes.authSetting['scope.userLocation']) {
-                this.setData({ locationAuthorized: true })
-                this.getLocation()
-              }
-            }})
-          }
-        }
-      })
-    }})
-  },
 async loadData() {
     console.log('[index] loadData START')
     const fallbackWeather = { temp: '--', condition: '请配置云环境', wind: '', humidity: 0, icon: '', tip: '云函数未部署，天气数据暂不可用' }

@@ -171,8 +171,8 @@ Page({
     }
     const locData = { id: best.id, name: best.name }
     wx.setStorageSync('userLocation', locData)
-    this.setData({ locationId: locData.id, locationName: locData.name })
-    this.loadData()
+    this.setData({ locationId: locData.id, locationName: locData.name }, () => { this.loadData() })
+
   },
 
   async loadData() {

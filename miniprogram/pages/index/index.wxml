@@ -7,7 +7,7 @@
         <view class="home-location" bindtap="onLocationTap">
           <text class="loc-emoji">📍</text>
           <text>{{locationName}}</text>
-          <text class="location-switch-text">切换</text>
+          <text class="location-switch-text" bindtap="onLocationTap">切换</text>
         </view>
       </view>
       <view class="digital-avatar">

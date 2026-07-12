@@ -77,14 +77,20 @@ Page({
   },
 
   onLocationTap() {
+    console.log('[index] onLocationTap called')
     const cities = Object.entries(CITY_MAP)
+    const names = cities.map(([, name]) => name)
+    console.log('[index] cities count:', names.length)
     wx.showActionSheet({
-      itemList: cities.map(([, name]) => name),
+      itemList: names,
       success: (res) => {
         const [id, name] = cities[res.tapIndex]
         wx.setStorageSync('userLocation', { id, name })
         this.setData({ locationId: id, locationName: name, locationAuthorized: true })
         this.loadData()
+      },
+      fail: (err) => {
+        console.warn('[index] showActionSheet fail:', err)
       }
     })
   },

@@ -183,9 +183,7 @@ Page({
       const clothesCount = await db.collection('clothes').where({ user_id: '{openid}' }).count()
       const outfitCount = await db.collection('outfits').where({ _openid: '{openid}', status: 'accepted' }).count()
       this.setData({ clothesCount: clothesCount.total, outfitCount: outfitCount.total })
-      const weatherRes = await api.getWeather(this.data.locationId).catch(() => null)
-      weatherRes.iconType = WEATHER_ICON_MAP[parseInt(weatherRes.icon)] || 'cloudy'; this.setData({ weather: weatherRes })
-      else { this.setData({ weather: fallbackWeather }) }
+      if (weatherRes && weatherRes.temp !== '--') { weatherRes.iconType = WEATHER_ICON_MAP[parseInt(weatherRes.icon)] || 'cloudy'; this.setData({ weather: weatherRes }) }
       const dailyRes = await api.getDailyRecommend().catch(() => null)
       console.log('[index] dailyRes:', JSON.stringify(dailyRes).substring(0, 200))
       if (dailyRes && dailyRes.outfit) {

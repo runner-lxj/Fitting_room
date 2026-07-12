@@ -312,6 +312,16 @@
   line-height: 1.4;
 }
 .batch-btn-cancel::after { border: none; }
+.batch-btn-reject {
+  padding: 14rpx 32rpx;
+  font-size: 26rpx;
+  color: var(--accent);
+  background: rgba(194,132,122,0.08);
+  border: 1rpx solid rgba(194,132,122,0.2);
+  border-radius: 999rpx;
+  line-height: 1.4;
+}
+.batch-btn-reject::after { border: none; }
 .batch-btn-confirm {
   padding: 14rpx 40rpx;
   font-size: 26rpx;

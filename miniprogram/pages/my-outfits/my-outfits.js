@@ -170,6 +170,32 @@ Page({
     })
   },
 
+  async batchReject() {
+    const ids = Object.keys(this.data.selectedIds)
+    if (ids.length === 0) return
+    wx.showModal({
+      title: '批量舍弃',
+      content: '确定舍弃选中的 ' + ids.length + ' 套方案？',
+      success: async (res) => {
+        if (!res.confirm) return
+        wx.showLoading({ title: '舍弃中 0/' + ids.length })
+        let done = 0
+        for (const id of ids) {
+          try {
+            await api.rejectOutfit(id)
+            done++
+            wx.showLoading({ title: '舍弃中 ' + done + '/' + ids.length })
+          } catch (e) { console.error('[batch] reject failed:', id, e) }
+        }
+        wx.hideLoading()
+        wx.showToast({ title: '已舍弃 ' + done + ' 套', icon: 'success' })
+        app.globalData.outfitDirty = true
+        this.exitBatchMode()
+        this.loadOutfits()
+      }
+    })
+  },
+
   // ===== 一键搭配 =====
   async generateOutfits() {
     if (this.data.generating) return

@@ -92,7 +92,7 @@
       </view>
       <view class="batch-actions">
         <button class="batch-btn-cancel" bindtap="exitBatchMode">取消</button>
-        <button class="batch-btn-confirm" bindtap="batchAccept">采纳 ({{selectedCount}})</button>
+        <button class="batch-btn-reject" bindtap="batchReject">舍弃 ({{selectedCount}})</button><button class="batch-btn-confirm" bindtap="batchAccept">采纳 ({{selectedCount}})</button>
       </view>
     </view>
   </view>

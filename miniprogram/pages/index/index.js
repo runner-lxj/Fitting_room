@@ -61,16 +61,16 @@ Page({
       this.setData({ locationId: saved.id, locationName: saved.name })
       this.loadData()
     } else {
-      // 首次进入，请求定位授权
       wx.authorize({
         scope: 'scope.userLocation',
-        success: () => {
-          this.getLocation()
-        },
+        success: () => { this.getLocation() },
         fail: () => {
-          // 未授权，使用默认北京
           this.setData({ locationId: '101010100', locationName: '北京' })
           this.loadData()
+        }
+      })
+    }
+  },
 
   refreshLocation() {
     wx.removeStorageSync('userLocation')
@@ -86,10 +86,12 @@ Page({
           cancelText: '暂不',
           success: (res) => {
             if (res.confirm) {
-              wx.openSetting({ success: (r) => {
-                if (r.authSetting['scope.userLocation']) this.getLocation()
-                else this.setData({ locationName: '北京' })
-              }})
+              wx.openSetting({
+                success: (r) => {
+                  if (r.authSetting['scope.userLocation']) this.getLocation()
+                  else this.setData({ locationName: '北京' })
+                }
+              })
             } else {
               this.setData({ locationName: '北京' })
             }
@@ -98,17 +100,11 @@ Page({
       }
     })
   },
-        }
-      })
-    }
-  },
 
   getLocation() {
     wx.getLocation({
       type: 'gcj02',
-      success: (res) => {
-        this.reverseGeocode(res.latitude, res.longitude)
-      },
+      success: (res) => { this.reverseGeocode(res.latitude, res.longitude) },
       fail: () => {
         this.setData({ locationId: '101010100', locationName: '北京' })
         this.loadData()
@@ -175,12 +171,11 @@ Page({
     wx.showLoading({ title: '换一批中...' })
     this.loadData().then(() => { wx.hideLoading() }).catch(() => { wx.hideLoading() })
   },
+
   goDetail(e) { wx.navigateTo({ url: '/pages/outfit-detail/outfit-detail?id=' + e.currentTarget.dataset.id }) },
   goWardrobe() { wx.switchTab({ url: '/pages/wardrobe/wardrobe' }) },
   goOutfits() { wx.switchTab({ url: '/pages/my-outfits/my-outfits' }) },
-  async goAddClothes() {
-    wx.switchTab({ url: '/pages/wardrobe/wardrobe' })
-  },
+  goAddClothes() { wx.switchTab({ url: '/pages/wardrobe/wardrobe' }) },
   goMyOutfits() { wx.switchTab({ url: '/pages/my-outfits/my-outfits' }) },
   onShareAppMessage() {
     return { title: '智能穿搭助手 - AI天气穿搭推荐', path: '/pages/index/index' }

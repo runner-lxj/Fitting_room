@@ -20,11 +20,6 @@
       <text class="menu-value">{{userInfo.nickName}}</text>
       <view class="icon-chevron"></view>
     </view>
-    <view class="menu-item" bindtap="reuploadPhoto">
-      <view class="icon-menu-dot"></view>
-      <text class="menu-text">上传人身照</text>
-      <view class="icon-chevron"></view>
-    </view>
     <view class="menu-item" bindtap="goAdmin" wx:if="{{isAdmin}}">
       <view class="icon-menu-dot"></view>
       <text class="menu-text">管理员配置</text>

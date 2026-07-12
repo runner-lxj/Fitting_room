@@ -158,3 +158,123 @@
 | MiMo-v2.5 API | 0元（已有额度） |
 | 和风天气 API | 0元（免费版） |
 | 首年总计 | 300元 |
+---
+
+## 附录：出装图合成方案（outfit-compose）详细设计
+
+### 背景
+
+V1.0 搭配详情页直接展示各单品原始照片（2×2网格），未做图片合成。后续版本计划用 Pillow 将多件衣服的抠图拼接成一张搭配效果图，提升视觉呈现。
+
+### 前置条件
+
+1. **衣服抠图**：上传衣服时需生成透明背景 PNG（cutout_url），目前未实现
+2. **Python 运行环境**：云函数需支持 Python 或在 Node.js 中调用 Pillow
+3. **模板设计**：需设计2-4种布局模板适配不同件数
+
+### 技术方案
+
+#### 1. 模板布局
+
+| 模板 | 适用件数 | 布局 | 说明 |
+|------|----------|------|------|
+| 模板A | 2件 | 上下排列 | 上衣+下装 |
+| 模板B | 3件 | 品字形 | 上衣+下装+鞋子 |
+| 模板C | 4件 | 2×2网格 | 上衣+下装+鞋子+配饰 |
+| 模板D | 5件 | T型 | 内搭+外搭+下装+鞋子+配饰 |
+
+#### 2. 合成流程
+
+```
+outfit-recommend 云函数生成搭配
+        ↓
+获取搭配中每件衣服的 cutout_url
+        ↓
+从云存储下载抠图 PNG
+        ↓
+Pillow 按模板布局合成（白底/渐变底）
+        ↓
+上传合成图到云存储（outfit/composition_{id}.png）
+        ↓
+更新 outfits 集合的 composition_url 字段
+```
+
+#### 3. Pillow 合成代码示意
+
+```python
+from PIL import Image, ImageDraw
+import requests
+from io import BytesIO
+
+def compose_outfit(cutout_urls, template='B'):
+    """合成出装图"""
+    canvas_size = (800, 800)
+    bg_color = (250, 248, 245)  # 奶油白背景
+    canvas = Image.new('RGB', canvas_size, bg_color)
+    
+    # 下载抠图
+    images = []
+    for url in cutout_urls:
+        resp = requests.get(url)
+        img = Image.open(BytesIO(resp.content)).convert('RGBA')
+        images.append(img)
+    
+    # 按模板布局放置
+    if template == 'B':  # 品字形，3件
+        positions = [(100, 50), (100, 350), (450, 350)]
+        sizes = [(300, 300), (300, 300), (250, 250)]
+    
+    for img, pos, size in zip(images, positions, sizes):
+        img = img.resize(size, Image.LANCZOS)
+        canvas.paste(img, pos, img)  # 用alpha通道做透明合成
+    
+    return canvas
+```
+
+#### 4. 云函数改造
+
+在 `outfit-recommend/index.js` 的 `generateOutfits` 函数中，生成搭配后增加合成步骤：
+
+```javascript
+// 生成搭配后
+for (const o of savedOutfits) {
+  const clothIds = o.items.map(i => i.id).filter(Boolean)
+  // 查询抠图URL
+  const clothRes = await db.collection('clothes')
+    .where({ _id: db.command.in(clothIds) }).get()
+  const cutoutUrls = clothRes.data
+    .map(c => c.cutout_url)
+    .filter(Boolean)
+  
+  if (cutoutUrls.length >= 2) {
+    // 调用合成云函数
+    const compRes = await cloud.callFunction({
+      name: 'outfit-compose',
+      data: { cutoutUrls, outfitId: o._id }
+    })
+    // 更新composition_url
+    await db.collection('outfits').doc(o._id).update({
+      data: { composition_url: compRes.result.fileID }
+    })
+  }
+}
+```
+
+### 实施步骤
+
+| 步骤 | 任务 | 工时 |
+|------|------|------|
+| 1 | 衣服上传时增加抠图环节（rembg/remove.bg） | 1天 |
+| 2 | 设计4种布局模板（确定坐标和尺寸） | 2小时 |
+| 3 | 创建 outfit-compose Python 云函数 | 半天 |
+| 4 | outfit-recommend 中调用合成 | 2小时 |
+| 5 | 详情页 Hero 区适配合成图展示 | 1小时 |
+| 6 | 测试不同件数的合成效果 | 2小时 |
+| **合计** | | **约2.5天** |
+
+### 风险与注意事项
+
+1. **抠图质量**：rembg 对复杂背景效果一般，可能需要 fallback 到 remove.bg API（有免费额度）
+2. **云函数内存**：Pillow 处理800×800图片约需 50-100MB 内存，微信云函数默认 256MB 足够
+3. **执行时间**：下载+合成+上传约 3-5 秒，需在客户端设置合理超时
+4. **成本**：合成在云函数中执行，免费额度内无额外费用

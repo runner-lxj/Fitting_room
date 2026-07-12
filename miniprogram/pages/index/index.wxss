@@ -435,9 +435,34 @@
   margin-left: 8rpx;
   line-height: 1;
 }
-
 /* 天气图标 */
-.weather-icon-img {
-  width: 56rpx;
-  height: 56rpx;
-}
+.weather-icon { width: 56rpx; height: 56rpx; position: relative; }
+.weather-sunny { border-radius: 50%; background: #F0A030; box-shadow: 0 0 0 8rpx rgba(240,160,48,0.2), 0 0 0 16rpx rgba(240,160,48,0.08); }
+.weather-cloudy { background: transparent; }
+.weather-cloudy::before { content: ""; position: absolute; top: 4rpx; right: 0; width: 28rpx; height: 28rpx; border-radius: 50%; background: #F0A030; }
+.weather-cloudy::after { content: ""; position: absolute; bottom: 6rpx; left: 0; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #C8BEB4; border: 3rpx solid #C8BEB4; }
+.weather-overcast { background: transparent; }
+.weather-overcast::after { content: ""; position: absolute; top: 8rpx; left: 4rpx; width: 48rpx; height: 32rpx; border-radius: 32rpx; background: #B0A898; border: 3rpx solid #B0A898; }
+.weather-rain-light { background: transparent; }
+.weather-rain-light::before { content: ""; position: absolute; top: 4rpx; left: 4rpx; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #B0A898; border: 3rpx solid #B0A898; }
+.weather-rain-light::after { content: ""; position: absolute; bottom: 2rpx; left: 12rpx; width: 3rpx; height: 14rpx; background: #7B9EB8; border-radius: 2rpx; box-shadow: 12rpx 2rpx 0 #7B9EB8, 24rpx -2rpx 0 #7B9EB8; }
+.weather-rain-heavy { background: transparent; }
+.weather-rain-heavy::before { content: ""; position: absolute; top: 2rpx; left: 4rpx; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #8A9DAD; border: 3rpx solid #8A9DAD; }
+.weather-rain-heavy::after { content: ""; position: absolute; bottom: 0; left: 8rpx; width: 3rpx; height: 20rpx; background: #5A7F9A; border-radius: 2rpx; box-shadow: 12rpx 0 0 #5A7F9A, 24rpx 0 0 #5A7F9A; }
+.weather-thunder { background: transparent; }
+.weather-thunder::before { content: ""; position: absolute; top: 2rpx; left: 4rpx; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #8A9DAD; border: 3rpx solid #8A9DAD; }
+.weather-thunder::after { content: ""; position: absolute; bottom: 4rpx; left: 22rpx; width: 0; height: 0; border-left: 8rpx solid transparent; border-right: 8rpx solid transparent; border-top: 16rpx solid #F0A030; }
+.weather-snow-light { background: transparent; }
+.weather-snow-light::before { content: ""; position: absolute; top: 4rpx; left: 4rpx; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #C8C0D4; border: 3rpx solid #C8C0D4; }
+.weather-snow-light::after { content: ""; position: absolute; bottom: 4rpx; left: 10rpx; width: 8rpx; height: 8rpx; border-radius: 50%; background: #fff; border: 2rpx solid #C8C0D4; box-shadow: 14rpx 0 0 0 #fff, 14rpx 0 0 2rpx #C8C0D4; }
+.weather-snow-heavy { background: transparent; }
+.weather-snow-heavy::before { content: ""; position: absolute; top: 2rpx; left: 4rpx; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #A8A0B8; border: 3rpx solid #A8A0B8; }
+.weather-snow-heavy::after { content: ""; position: absolute; bottom: 2rpx; left: 6rpx; width: 8rpx; height: 8rpx; border-radius: 50%; background: #fff; border: 2rpx solid #C8C0D4; box-shadow: 12rpx 2rpx 0 0 #fff, 12rpx 2rpx 0 2rpx #C8C0D4, 24rpx -2rpx 0 0 #fff, 24rpx -2rpx 0 2rpx #C8C0D4, 36rpx 2rpx 0 0 #fff, 36rpx 2rpx 0 2rpx #C8C0D4; }
+.weather-windy { background: transparent; }
+.weather-windy::before { content: ""; position: absolute; top: 12rpx; left: 4rpx; width: 40rpx; height: 3rpx; background: #B0A898; border-radius: 2rpx; box-shadow: 0 10rpx 0 #B0A898, 0 -10rpx 0 #B0A898; }
+.weather-windy::after { content: ""; position: absolute; top: 12rpx; right: 2rpx; width: 12rpx; height: 12rpx; border-top: 3rpx solid #B0A898; border-right: 3rpx solid #B0A898; border-radius: 0 8rpx 0 0; }
+.weather-fog { background: transparent; }
+.weather-fog::before { content: ""; position: absolute; top: 10rpx; left: 2rpx; width: 48rpx; height: 3rpx; background: #C8BEB4; border-radius: 2rpx; box-shadow: 0 10rpx 0 #C8BEB4, 0 20rpx 0 #D8D0C8; }
+.weather-sleet { background: transparent; }
+.weather-sleet::before { content: ""; position: absolute; top: 4rpx; left: 4rpx; width: 44rpx; height: 28rpx; border-radius: 28rpx; background: #B0A898; border: 3rpx solid #B0A898; }
+.weather-sleet::after { content: ""; position: absolute; bottom: 4rpx; left: 10rpx; width: 3rpx; height: 12rpx; background: #7B9EB8; border-radius: 2rpx; box-shadow: 12rpx -4rpx 0 0 #fff, 12rpx -4rpx 0 2rpx #C8C0D4; }

@@ -104,6 +104,26 @@ Page({
     })
   },
 
+  reverseGeocode(lat, lng) {
+    const cities = [
+      { id: '101010100', name: '北京', lat: 39.9, lng: 116.4 },
+      { id: '101020100', name: '上海', lat: 31.2, lng: 121.5 },
+      { id: '101280101', name: '广州', lat: 23.1, lng: 113.3 },
+      { id: '101280601', name: '深圳', lat: 22.5, lng: 114.1 },
+      { id: '101210101', name: '杭州', lat: 30.3, lng: 120.2 },
+      { id: '101270101', name: '成都', lat: 30.6, lng: 104.1 }
+    ]
+    let best = cities[0], minDist = Infinity
+    for (const c of cities) {
+      const d = Math.sqrt(Math.pow(lat - c.lat, 2) + Math.pow(lng - c.lng, 2))
+      if (d < minDist) { minDist = d; best = c }
+    }
+    const locData = { id: best.id, name: best.name }
+    wx.setStorageSync('userLocation', locData)
+    this.setData({ locationId: locData.id, locationName: locData.name })
+    this.loadData()
+  },
+
   async loadData() {
     console.log('[index] loadData START')
     const fallbackWeather = { temp: '--', condition: '请配置云环境', wind: '', humidity: 0, icon: '', tip: '云函数未部署，天气数据暂不可用' }

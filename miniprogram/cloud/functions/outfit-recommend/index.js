@@ -54,7 +54,7 @@ async function fetchWeather(location) {
       else if (temp >= 18) tip = '气温适中，可搭配薄外套'
       else if (temp >= 10) tip = '偏凉，建议穿卫衣或薄外套'
       else tip = '天气较冷，注意添衣保暖'
-      return { temp, condition: n.text, wind: n.windDir, humidity: parseInt(n.humidity), icon: '', tip }
+      return { temp, condition: n.text, wind: n.windDir, humidity: parseInt(n.humidity), icon: n.icon || '', tip }
     }
     return null
   } catch (e) { console.error('[weather] error:', e.message); return null }

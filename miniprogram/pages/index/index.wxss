@@ -435,3 +435,9 @@
   margin-left: 8rpx;
   line-height: 1;
 }
+
+/* 天气图标 */
+.weather-icon-img {
+  width: 56rpx;
+  height: 56rpx;
+}

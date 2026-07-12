@@ -28,7 +28,7 @@
           <text class="weather-detail">{{weather.wind}} · 湿度 {{weather.humidity}}%</text>
         </view>
         <view class="weather-icon-box">
-          <text class="weather-emoji">☁️</text>
+          <image class="weather-icon-img" src="/static/icons/weather/{{weather.iconFile || 'cloudy'}}.svg" mode="aspectFit"></image>
         </view>
       </view>
       <view class="weather-tip">

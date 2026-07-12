@@ -2,6 +2,31 @@ const app = getApp()
 const { getThemeClass } = require('../../utils/theme')
 const api = require('../../utils/api')
 
+
+const CITY_MAP = {
+  '101010100': '北京', '101020100': '上海', '101280101': '广州',
+  '101280601': '深圳', '101270101': '成都', '101230201': '厦门',
+  '101210101': '杭州', '101190401': '南京', '101180101': '郑州',
+  '101030100': '天津', '101250101': '长沙', '101230101': '福州',
+  '101120101': '济南', '101110101': '西安', '101070101': '沈阳',
+  '101050101': '哈尔滨', '101200101': '武汉', '101290101': '昆明',
+  '101330101': '大连', '101240101': '南昌', '101180101': '重庆'
+}
+
+const WEATHER_ICON_MAP = {
+  100: 'sunny', 103: 'sunny',
+  101: 'cloudy', 104: 'cloudy',
+  102: 'overcast',
+  300: 'rain-light', 305: 'rain-light', 313: 'rain-light',
+  302: 'rain-heavy', 310: 'rain-heavy', 314: 'rain-heavy',
+  304: 'thunder', 312: 'thunder',
+  306: 'sleet', 315: 'sleet',
+  400: 'snow-light', 401: 'snow-light', 407: 'snow-light',
+  403: 'snow-heavy', 408: 'snow-heavy', 499: 'snow-heavy',
+  500: 'windy', 501: 'windy',
+  509: 'fog', 510: 'fog', 514: 'fog', 515: 'fog'
+}
+
 Page({
   data: {
     themeClass: '',
@@ -159,7 +184,7 @@ Page({
       const outfitCount = await db.collection('outfits').where({ _openid: '{openid}', status: 'accepted' }).count()
       this.setData({ clothesCount: clothesCount.total, outfitCount: outfitCount.total })
       const weatherRes = await api.getWeather(this.data.locationId).catch(() => null)
-      if (weatherRes && weatherRes.temp !== '--') { this.setData({ weather: weatherRes }) }
+      if (weatherRes && weatherRes.temp !== '--') { weatherRes.iconFile = WEATHER_ICON_MAP[parseInt(weatherRes.icon)] || 'cloudy'; this.setData({ weather: weatherRes }) }
       else { this.setData({ weather: fallbackWeather }) }
       const dailyRes = await api.getDailyRecommend().catch(() => null)
       console.log('[index] dailyRes:', JSON.stringify(dailyRes).substring(0, 200))
